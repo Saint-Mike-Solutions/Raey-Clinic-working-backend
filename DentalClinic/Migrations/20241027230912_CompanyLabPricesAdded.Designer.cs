@@ -4,6 +4,7 @@ using DentalClinic.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalClinic.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241027230912_CompanyLabPricesAdded")]
+    partial class CompanyLabPricesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -259,26 +262,26 @@ namespace DentalClinic.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CompanyLabPriceId"));
 
-                    b.Property<decimal>("BacterologyPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("BacterologyPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("ChemistryPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("ChemistryPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("HematologyPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("HematologyPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("MicroscopyPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("MicroscopyPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("SerologyPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("SerologyPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("StoolExamPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("StoolExamPrice")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("UrinalysisPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("UrinalysisPrice")
+                        .HasColumnType("int");
 
                     b.HasKey("CompanyLabPriceId");
 

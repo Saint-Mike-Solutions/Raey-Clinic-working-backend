@@ -1,6 +1,7 @@
 ﻿using DentalClinic.Services;
 using DentalClinic.Services.AppointmentService;
 using DentalClinic.Services.AreaSettingService;
+using DentalClinic.Services.CompanyLabPricesService;
 using DentalClinic.Services.CompanySettingService;
 using DentalClinic.Services.CreditService;
 using DentalClinic.Services.EmployeeService;
@@ -58,6 +59,7 @@ namespace DentalClinic
             services.AddScoped<IReferralService, ReferralService>();
             services.AddScoped<ILaboratoryService, LaboratoryService>();
             services.AddScoped<ILaboratoryRequestListService, LaboratoryRequestListService>();
+            services.AddScoped<ICompanyLabPricesService, CompanyLabPricesService>();
         }
 
     }

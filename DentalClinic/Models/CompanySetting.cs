@@ -29,5 +29,20 @@ namespace DentalClinic.Models
 
         public int NumberOfBranches { get; set; }
 
+
+        public int StoolExamPrice { get; set; }
+
+        public int BacterologyPrice { get; set; }
+
+        public int MicroscopyPrice { get; set; }
+
+        public int UrinalysisPrice { get; set; }
+
+        public int HematologyPrice { get; set; }
+
+        public int ChemistryPrice { get; set; }
+
+        public int SerologyPrice { get; set; }
+
     }
 }
