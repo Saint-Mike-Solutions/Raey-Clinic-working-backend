@@ -21,6 +21,7 @@ namespace DentalClinic.DTOs.LaboratoryRequestsDTO
         //public int? AFBId { get; set; }
         //public AFB? AFB { get; set; }
 
+
         public string? Culture { get; set; }
 
 
@@ -29,5 +30,8 @@ namespace DentalClinic.DTOs.LaboratoryRequestsDTO
         public string? AFBTwo { get; set; }
 
         public string? AFBThree { get; set; }
+
+        public int LabReqListId { get; set; }
+
     }
 }

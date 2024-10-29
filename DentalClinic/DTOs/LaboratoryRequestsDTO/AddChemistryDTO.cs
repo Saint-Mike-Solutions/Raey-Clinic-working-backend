@@ -39,5 +39,8 @@
         public string? Hdl { get; set; }
 
         public string? Ldl { get; set; }
+
+        public int LabReqListId { get; set; }
+
     }
 }

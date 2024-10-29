@@ -225,6 +225,11 @@ namespace DentalClinic.Context
                 .WithMany() // Assuming an employee can report multiple tests
                 .HasForeignKey(l => l.ReportedById)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            //modelBuilder.Entity<LaboratoryRequestList>()
+            //    .HasOne(lr => lr.labratoryRequest)
+            //    .WithMany(l => l.LabrequestLists)
+            //    .HasForeignKey(lr => lr.laboratoryrequestId);
         }
 
     }

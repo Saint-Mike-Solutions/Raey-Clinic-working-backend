@@ -162,6 +162,9 @@ namespace DentalClinic.DTOs.LaboratoryRequestsDTO
 
         public string? AFBThree { get; set; }
 
+        public int LabReqListId { get; set; }
+
+
 
 
     }

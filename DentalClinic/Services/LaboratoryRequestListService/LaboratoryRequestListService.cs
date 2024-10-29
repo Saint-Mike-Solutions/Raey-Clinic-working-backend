@@ -18,7 +18,10 @@ namespace DentalClinic.Services.LaboratoryRequestListService
 
         public async Task<LaboratoryRequestList> AddLaboratoryRequestList(AddLaboratoryRequestListDTO DTO)
         {
+
             var patient = await _context.Patients.Where(p => p.PatientId == DTO.PatientId).FirstOrDefaultAsync();
+            //int id = patient.LaboratoryRequests.Id;
+            //var labReq = await _context.LaboratoryRequests.Where(lr => lr.Id == id).FirstOrDefaultAsync();
             var Requester = await _context.Employees.Where(e => e.EmployeeId == DTO.EmployeeId).FirstOrDefaultAsync();
             LaboratoryRequestList lab = new LaboratoryRequestList
             {
@@ -34,6 +37,9 @@ namespace DentalClinic.Services.LaboratoryRequestListService
                 PatientId = DTO.PatientId,
                 EmployeeId = DTO.EmployeeId,
             };
+
+            //lab.labratoryRequest = labReq;
+            //lab.laboratoryrequestId = id;
 
             lab.Requester = Requester;
             lab.Patient = patient;

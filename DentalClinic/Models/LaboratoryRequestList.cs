@@ -27,8 +27,12 @@ namespace DentalClinic.Models
         public bool Microscopy { get; set; }
 
         public bool StoolExamination { get; set; }
-
+            
         public string? Status { get; set; } = "Pending";
+
+        //public LaboratoryRequests? labratoryRequest { get; set; }
+
+        //public int laboratoryrequestId { get; set; }
         
         public DateTime DateTime { get; set; } = DateTime.Now;
     }

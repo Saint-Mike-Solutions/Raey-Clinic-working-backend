@@ -19,6 +19,11 @@
 
         public string? Bacteria { get; set; }
 
+
+
         public string? Hcg { get; set; }
+    
+        public int LabReqListId { get; set; }
+
     }
 }

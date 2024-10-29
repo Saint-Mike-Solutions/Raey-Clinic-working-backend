@@ -16,5 +16,8 @@
         public string? Concentration { get; set; }
 
         public string? OccultBlood { get; set; }
+
+        public int LabReqListId { get; set; }
+
     }
 }

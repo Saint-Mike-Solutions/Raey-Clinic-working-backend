@@ -36,5 +36,8 @@
 
         public string? BloodFilm { get; set; }
 
+        public int LabReqListId { get; set; }
+
+
     }
 }

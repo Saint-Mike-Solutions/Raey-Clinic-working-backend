@@ -65,6 +65,13 @@ namespace DentalClinic.Services.LaboratoryService
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
 
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
+
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -134,6 +141,12 @@ namespace DentalClinic.Services.LaboratoryService
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
 
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -200,6 +213,12 @@ namespace DentalClinic.Services.LaboratoryService
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
 
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -260,7 +279,12 @@ namespace DentalClinic.Services.LaboratoryService
 
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -324,7 +348,12 @@ namespace DentalClinic.Services.LaboratoryService
 
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -396,7 +425,12 @@ namespace DentalClinic.Services.LaboratoryService
 
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -465,7 +499,12 @@ namespace DentalClinic.Services.LaboratoryService
 
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
+
+            labreqlist.Status = "Complete";
+
+            _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one

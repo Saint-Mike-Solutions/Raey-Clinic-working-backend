@@ -28,5 +28,8 @@
         public string? Urobilingen { get; set; }
 
         public string? Blood { get; set; }
+
+        public int LabReqListId { get; set; }
+
     }
 }

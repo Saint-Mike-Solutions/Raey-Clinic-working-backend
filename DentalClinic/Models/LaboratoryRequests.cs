@@ -20,6 +20,8 @@ namespace DentalClinic.Models
         public Chemistry? Chemistry { get; set; }
 
         public Bacterology? Bacterology { get; set; }
+
+        //public List<LaboratoryRequestList>? LabrequestLists { get; set; }
         
         public int? PatientId { get; set; }
 

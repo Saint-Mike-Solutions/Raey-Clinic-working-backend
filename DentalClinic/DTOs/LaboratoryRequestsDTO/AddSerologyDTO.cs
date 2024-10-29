@@ -26,5 +26,8 @@
         public string? HPyloryAg { get; set; }
 
         public string? HPyloryAb { get; set; }
+
+        public int LabReqListId { get; set; }
+
     }
 }
