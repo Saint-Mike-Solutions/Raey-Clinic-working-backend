@@ -66,7 +66,7 @@ namespace DentalClinic.Models
 
         public List<Referral>? Referrals { get; set; }
 
-        //[System.Text.Json.Serialization.JsonIgnore]
+        //[System.Text.Jso n.Serialization.JsonIgnore]
 
         public LaboratoryRequests? LaboratoryRequests { get; set; }
 
