@@ -26,6 +26,8 @@ namespace DentalClinic.Models
 
         public string? HPyloryAb { get; set; }
 
+        public bool isPaid { get; set; } = false;
+
 
     }
 

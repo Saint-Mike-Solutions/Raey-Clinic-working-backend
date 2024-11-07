@@ -15,6 +15,8 @@ namespace DentalClinic.Models
 
         public string? OccultBlood { get; set; }
 
+        public bool isPaid { get; set; } = false;
+
 
     }
 }

@@ -39,6 +39,7 @@ namespace DentalClinic.Models
 
         public string? Ldl   { get; set; }
 
+        public bool isPaid { get; set; } = false;
 
     }
 }

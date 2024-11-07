@@ -28,6 +28,8 @@ namespace DentalClinic.Models
 
         public Diff? Diff { get; set;}
 
+        public bool isPaid { get; set; } = false;
+
 
 
     }

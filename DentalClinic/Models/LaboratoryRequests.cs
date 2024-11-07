@@ -39,6 +39,8 @@ namespace DentalClinic.Models
 
         public DateTime? ReportedDate { get; set; } = DateTime.Now;
 
+        public bool isPaid { get; set; } = false;
+
         public static implicit operator List<object>(LaboratoryRequests v)
         {
             throw new NotImplementedException();

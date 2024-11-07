@@ -20,6 +20,8 @@ namespace DentalClinic.Models
 
         public string? Culture { get; set; }
 
+        public bool isPaid { get; set; }
+
 
     }
 }

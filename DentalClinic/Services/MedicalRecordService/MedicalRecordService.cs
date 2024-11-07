@@ -47,6 +47,12 @@ namespace DentalClinic.Services.MedicalRecordService
                         .Where(e => e.PatientID == recordDTO.PatientId)
                         .FirstOrDefaultAsync();
 
+
+            // LabServices
+            var labServices = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == recordDTO.PatientId);
+
+
+
             if (patientCard == null)
             {
                 var pc = new PatientCard

@@ -23,5 +23,7 @@ namespace DentalClinic.Models
 
         public int LaboratoryRequestId { get; set; }  // Foreign key for the Laboratory Request.
         public LaboratoryRequests? LaboratoryRequest { get; set; }  // Navigation property back to LaboratoryRequests.
+
+        public bool isPaid { get; set; } = false;
     }
 }

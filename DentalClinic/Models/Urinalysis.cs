@@ -29,5 +29,7 @@ namespace DentalClinic.Models
 
         public string? Blood { get; set; }
 
+        public bool isPaid { get; set; } = false;
+
     }
 }
