@@ -21,7 +21,7 @@ namespace DentalClinic.Models
 
         // Foreign key for Patient
         public int PatientId { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore]
+        //[System.Text.Json.Serialization.JsonIgnore]
 
         public Patient? Patient { get; set; }
 

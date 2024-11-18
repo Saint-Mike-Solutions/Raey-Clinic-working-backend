@@ -50,6 +50,11 @@ namespace DentalClinic.Services.MedicalRecordService
 
             // LabServices
             var labServices = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == recordDTO.PatientId);
+            if (labServices.isPaid == false)
+            {
+                labServices.isPaid = true;
+                
+            }
 
 
 
