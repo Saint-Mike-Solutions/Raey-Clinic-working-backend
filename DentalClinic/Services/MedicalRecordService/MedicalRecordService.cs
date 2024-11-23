@@ -48,39 +48,42 @@ namespace DentalClinic.Services.MedicalRecordService
                         .FirstOrDefaultAsync();
 
 
+            // LabServices
             var labServices = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == recordDTO.PatientId);
             if (labServices.isPaid == false)
             {
                 labServices.isPaid = true;
                 
             }
-            //if (patientCard == null)
-            //{
-            //    var pc = new PatientCard
-            //    {
-            //        PatientID = record.Patient.PatientId,
-            //        CreatedAT = DateTime.Now,
-            //    };
-            //    await _context.PatientCards.AddAsync(pc);
-            //    Procedure cardProcedure = await _context.Procedures
-            //            .Where(pr => pr.ProcedureName.ToLower() == "card")  // Replace with actual ID
-            //            .FirstOrDefaultAsync()??throw new KeyNotFoundException("card Procedure must be added to Treatments!!!");
 
-            //    if (cardProcedure != null)
-            //    {
-            //        record.IsCard = true;
-            //        proceduresList.Add(cardProcedure);
-            //        totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
-            //    }
-            //}
 
+
+            if (patientCard == null)
+            {
+                var pc = new PatientCard
+                {
+                    PatientID = record.Patient.PatientId,
+                    CreatedAT = DateTime.Now,
+                };
+                await _context.PatientCards.AddAsync(pc);
+                Procedure cardProcedure = await _context.Procedures
+                        .Where(pr => pr.ProcedureName == "card" || pr.ProcedureName == "CARD" || pr.ProcedureName == "Card")  // Replace with actual ID
+                        .FirstOrDefaultAsync()??throw new KeyNotFoundException("card Procedure must be added to Treatments!!!");
+
+                if (cardProcedure != null)
+                {
+                    record.IsCard = true;
+                    proceduresList.Add(cardProcedure);
+                    totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
+                }
+            }
             else if (patientCard != null && patientCard.CreatedAT < DateTime.Now.AddDays(-cardExpireAfter))
             {
 
                 patientCard.CreatedAT = DateTime.Now;
                 _context.PatientCards.Update(patientCard);
                 Procedure cardProcedure = await _context.Procedures
-                       .Where(pr => pr.ProcedureName.ToLower() == "card")  // Replace with actual ID
+                       .Where(pr => pr.ProcedureName == "card")  // Replace with actual ID
                        .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("card Procedure not found!!!");
                 if (cardProcedure != null)
                 {
@@ -98,6 +101,9 @@ namespace DentalClinic.Services.MedicalRecordService
                 record.IsCard = true;
             }
             record.TreatedBy = TreatmentBY;
+            //string[] separatedStrings = _toolsService.ReturnArrayofCommaSeparatedStrings(recordDTO.ReferalsList);
+
+            //List<Referal> referalList = new List<Referal>();
 
 
 
@@ -109,7 +115,17 @@ namespace DentalClinic.Services.MedicalRecordService
             record.ProcedureIDs = proceduresJson;
 
             record.Quantities = quantities;
-          
+            //foreach (int var in Procedures)
+            //{
+            //    Procedure? procedureItem = new Procedure();
+            //    procedureItem = await _context.Procedures
+            //                                    .Where(pr => pr.ProcedureID == var)
+            //                                    .FirstOrDefaultAsync();
+            //    if (procedureItem != null)
+            //    {
+            //        proceduresList.Add(procedureItem);
+            //    }
+            //}
 
 
             for (int i = 0; i < (recordDTO.Quantity.Length); i++)
@@ -157,7 +173,37 @@ namespace DentalClinic.Services.MedicalRecordService
            await _context.SaveChangesAsync();
             return MedicalRecord;
         }
+        //Medical record Update Not needed
+        //public async Task<MedicalRecord> UpdateMedicalRecord(UpdateMedicalRecordDTO medicalRecordDTO)
+        //{
+        //    var record = await _context.MedicalRecords
+        //                        .Where(mr=> mr.Medical_RecordID == medicalRecordDTO.MedicalRecordID)
+        //                        .FirstOrDefaultAsync()?? throw new KeyNotFoundException("Medical Record not Found!");
+        //    record.Patient = await _context.Patients
+        //                .Where(pa => pa.PatientId == medicalRecordDTO.PatientIdNo)
+        //                .FirstOrDefaultAsync();
+        //    var TreatmentBY = await _context.Employees
+        //                .Where(e => e.EmployeeId == medicalRecordDTO.TreatedByID)
+        //                .FirstOrDefaultAsync();
+        //    record.TreatedBy = TreatmentBY;
 
+        //}
+        //public async Task<List<MedicalRecord>> GetMedicalRecordforPatient(int patientID)
+        //{
+        //    var record = await _context.MedicalRecords
+        //                .Where(Mr => Mr.PatientId == patientID)
+        //                .Include(Mr => Mr.Procedures)
+        //                .ToListAsync();
+        //    if (record != null)
+        //    {
+        //        return record;
+        //    }
+
+        //    return new List<MedicalRecord>();
+
+
+
+        //}
         public async Task<List<DisplayMedicalRecordDTO>> GetAllMedicalRecords()
         {
             var records = await _context.MedicalRecords
@@ -181,12 +227,12 @@ namespace DentalClinic.Services.MedicalRecordService
                 SubTotalAmount = r.SubTotalAmount,
 
                 ProceduresIDs = string.IsNullOrEmpty(r.ProcedureIDs)
-    ? new int[] { 0 }
-    : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
+                    ? new int[] { 0 }
+                    : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
 
-                Quantity = string.IsNullOrEmpty(r.Quantities)
-    ? new int[] { 0 }
-    : JsonSerializer.Deserialize<int[]>(r.Quantities),
+                                Quantity = string.IsNullOrEmpty(r.Quantities)
+                    ? new int[] { 0 }
+                    : JsonSerializer.Deserialize<int[]>(r.Quantities),
 
                 IsPaid = r.IsPaid,
                 isCard = r.IsCard,
@@ -245,12 +291,12 @@ namespace DentalClinic.Services.MedicalRecordService
                     date = r.Date ?? DateTime.MinValue,
                     SubTotalAmount = r.SubTotalAmount,
                     ProceduresIDs = string.IsNullOrEmpty(r.ProcedureIDs)
-    ? new int[] { 0 }
-    : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
+                        ? new int[] { 0 }
+                        : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
 
-                    Quantity = string.IsNullOrEmpty(r.Quantities)
-    ? new int[] { 0 }
-    : JsonSerializer.Deserialize<int[]>(r.Quantities),
+                                        Quantity = string.IsNullOrEmpty(r.Quantities)
+                        ? new int[] { 0 }
+                        : JsonSerializer.Deserialize<int[]>(r.Quantities),
                     IsPaid = r.IsPaid,
                     isCard = r.IsCard,
                 }).ToList().OrderByDescending(r => r.date).ToList();

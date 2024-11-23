@@ -75,6 +75,8 @@ namespace DentalClinic.Services.PaymentService
 
 
 
+
+
                 if (DTO.IsCredit == true)
                 {
                     var compSet = await _context.CompanySettings.FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Company settings not set!!!");
@@ -222,6 +224,13 @@ namespace DentalClinic.Services.PaymentService
                 ImageAttachment = DTO.ImageAttachment,
                 MobileBanking = DTO.MobileBanking
             };
+
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == DTO.PatientID);
+
+            if (labreq != null)
+            {
+                payment.LaboratoryRequests = labreq;
+            }
             payment.MedicalRecord = record;
             record.IsPaid = true;
             record.IsCard = false;
@@ -274,6 +283,7 @@ namespace DentalClinic.Services.PaymentService
         {
             var PaymentRecord = await _context.Payments.Where(p=> p.PatientID == DTO)
                                                        .Include(p=> p.MedicalRecord)
+                                                       .Include(p => p.LaboratoryRequests)
                                                         .OrderByDescending(p=> p.PaymentDate)
                                                         .ToListAsync();
             return PaymentRecord;
@@ -283,6 +293,7 @@ namespace DentalClinic.Services.PaymentService
             var data = await _context.Payments
                                         .Where(p => p.Id == DTO)
                                         .Include(p => p.MedicalRecord)
+                                        .Include(p => p.LaboratoryRequests)
                                         .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Payment Record Not Found");
 
             int[] proceduresArray = string.IsNullOrEmpty(data.MedicalRecord.ProcedureIDs) ? new int[] { 0 } : JsonSerializer.Deserialize<int[]>(data.MedicalRecord.ProcedureIDs);
@@ -338,6 +349,7 @@ namespace DentalClinic.Services.PaymentService
         public async Task<List<Payment>> PaymentLogForAll()
         {
             var PaymentRecord = await _context.Payments
+                                            .Include(p=> p.LaboratoryRequests)
                                             .OrderByDescending(p => p.PaymentDate)
                                             .ToListAsync();
             return PaymentRecord;

@@ -67,7 +67,6 @@ namespace DentalClinic.Services.LaboratoryService
 
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
-
             labreqlist.Status = "Complete";
 
             _context.LaboratoryRequestLists.Update(labreqlist);
@@ -96,6 +95,7 @@ namespace DentalClinic.Services.LaboratoryService
                 _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
             }
 
+            labreq.isHematology = true;
             await _context.SaveChangesAsync();
 
             return Hema;
@@ -147,6 +147,7 @@ namespace DentalClinic.Services.LaboratoryService
             labreqlist.Status = "Complete";
 
             _context.LaboratoryRequestLists.Update(labreqlist);
+            labreq.isUrinalyis = true;
             if (labreq == null)
             {
                 // If no existing laboratory request exists, create a new one
@@ -170,6 +171,7 @@ namespace DentalClinic.Services.LaboratoryService
                 labreq.RequestedById = DTO.RequestedById;
                 _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
             }
+
 
             await _context.SaveChangesAsync();
 
@@ -217,7 +219,7 @@ namespace DentalClinic.Services.LaboratoryService
 
 
             labreqlist.Status = "Complete";
-
+            labreq.isSerology = true;
             _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
@@ -283,7 +285,7 @@ namespace DentalClinic.Services.LaboratoryService
 
 
             labreqlist.Status = "Complete";
-
+            labreq.isStoolExamination = true;
             _context.LaboratoryRequestLists.Update(labreqlist);
             if (labreq == null)
             {
@@ -350,7 +352,7 @@ namespace DentalClinic.Services.LaboratoryService
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
-
+            labreq.isMicroscopy = true;
             labreqlist.Status = "Complete";
 
             _context.LaboratoryRequestLists.Update(labreqlist);
@@ -426,7 +428,7 @@ namespace DentalClinic.Services.LaboratoryService
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
-
+            labreq.isChemistry = true;
 
             labreqlist.Status = "Complete";
 
@@ -500,7 +502,7 @@ namespace DentalClinic.Services.LaboratoryService
             // Retrieve the existing LaboratoryRequest for the patient
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
-
+            labreq.isBacterology = true;
 
             labreqlist.Status = "Complete";
 

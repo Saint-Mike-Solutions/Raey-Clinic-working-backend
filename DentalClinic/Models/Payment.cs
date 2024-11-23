@@ -32,6 +32,8 @@ namespace DentalClinic.Models
 
         public string? ImageAttachment { get; set; }
 
+        public LaboratoryRequests? LaboratoryRequests { get; set; }
+
         public MedicalRecord? MedicalRecord { get; set; }
          
         }

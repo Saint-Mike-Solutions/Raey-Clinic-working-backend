@@ -4,6 +4,7 @@ using DentalClinic.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalClinic.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241123005041_LabrequestPayment")]
+    partial class LabrequestPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -737,28 +740,7 @@ namespace DentalClinic.Migrations
                     b.Property<int?>("UrinalysisId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("isBacterology")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isChemistry")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isHematology")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isMicroscopy")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("isPaid")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isSerology")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isStoolExamination")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isUrinalyis")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
