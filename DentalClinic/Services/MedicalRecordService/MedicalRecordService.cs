@@ -23,7 +23,21 @@ namespace DentalClinic.Services.MedicalRecordService
         }
         public async Task<MedicalRecord> AddMedicalRecord(AddMedicalRecordDTO recordDTO)
         {
-            var record = _mapper.Map<MedicalRecord>(recordDTO);
+
+            var record = await _context.MedicalRecords.FirstOrDefaultAsync(p => p.Medical_RecordID == recordDTO.PatientId);
+
+            if (record  != null)
+            {
+                record.TreatedById = recordDTO.TreatedByID;
+                record.PrescribedMedicinesandNotes = recordDTO.PrescribedMedicinesandNotes;
+                record.ReferalList = recordDTO.ReferalList;
+                record.DiscountPercent = recordDTO.DiscountPercent;
+            }
+            else
+            {
+                return null;
+            }
+            //var record = _mapper.Map<MedicalRecord>(recordDTO);
             var patient = await _context.Patients.Where(p => p.PatientId == recordDTO.PatientId).FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Patient Not Found");
             patient.UpdatedAt = DateTime.Now;
             _context.Patients.Update(patient);
@@ -58,41 +72,43 @@ namespace DentalClinic.Services.MedicalRecordService
 
 
 
-            if (patientCard == null)
-            {
-                var pc = new PatientCard
-                {
-                    PatientID = record.Patient.PatientId,
-                    CreatedAT = DateTime.Now,
-                };
-                await _context.PatientCards.AddAsync(pc);
-                Procedure cardProcedure = await _context.Procedures
-                        .Where(pr => pr.ProcedureName == "card" || pr.ProcedureName == "CARD" || pr.ProcedureName == "Card")  // Replace with actual ID
-                        .FirstOrDefaultAsync()??throw new KeyNotFoundException("card Procedure must be added to Treatments!!!");
+            //if (patientCard == null)
+            //{
+            //    var pc = new PatientCard
+            //    {
+            //        PatientID = record.Patient.PatientId,
+            //        CreatedAT = DateTime.Now,
+            //    };
+            //    await _context.PatientCards.AddAsync(pc);
+            //    Procedure cardProcedure = await _context.Procedures
+            //            .Where(pr => pr.ProcedureName == "card" || pr.ProcedureName == "CARD" || pr.ProcedureName == "Card")  // Replace with actual ID
+            //            .FirstOrDefaultAsync()??throw new KeyNotFoundException("card Procedure must be added to Treatments!!!");
 
-                if (cardProcedure != null)
-                {
-                    record.IsCard = true;
-                    proceduresList.Add(cardProcedure);
-                    totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
-                }
-            }
-            else if (patientCard != null && patientCard.CreatedAT < DateTime.Now.AddDays(-cardExpireAfter))
-            {
+            //    if (cardProcedure != null)
+            //    {
+            //        record.IsCard = true;
+            //        proceduresList.Add(cardProcedure);
+            //        totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
+            //    }
+            //}
+            //else if (patientCard != null && patientCard.CreatedAT < DateTime.Now.AddDays(-cardExpireAfter))
+            //{
 
-                patientCard.CreatedAT = DateTime.Now;
-                _context.PatientCards.Update(patientCard);
-                Procedure cardProcedure = await _context.Procedures
-                       .Where(pr => pr.ProcedureName == "card")  // Replace with actual ID
-                       .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("card Procedure not found!!!");
-                if (cardProcedure != null)
-                {
-                    record.IsCard = true;
-                    proceduresList.Add(cardProcedure);
-                    totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
-                }
+            //    patientCard.CreatedAT = DateTime.Now;
+            //    _context.PatientCards.Update(patientCard);
+            //    Procedure cardProcedure = await _context.Procedures
+            //           .Where(pr => pr.ProcedureName == "card")  // Replace with actual ID
+            //           .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("card Procedure not found!!!");
+            //    if (cardProcedure != null)
+            //    {
+            //        record.IsCard = true;
+            //        proceduresList.Add(cardProcedure);
+            //        totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
+            //    }
 
-            }
+            //}
+
+
             var payments = await _context.Payments.Where(p => p.PatientID == recordDTO.PatientId)
                                 .OrderByDescending(p => p.PaymentDate)
                                 .FirstOrDefaultAsync();
@@ -112,20 +128,11 @@ namespace DentalClinic.Services.MedicalRecordService
             Procedures = recordDTO.ProceduresIDs;
             string proceduresJson = JsonSerializer.Serialize(Procedures);
             string quantities = JsonSerializer.Serialize(recordDTO.Quantity);
+
             record.ProcedureIDs = proceduresJson;
 
             record.Quantities = quantities;
-            //foreach (int var in Procedures)
-            //{
-            //    Procedure? procedureItem = new Procedure();
-            //    procedureItem = await _context.Procedures
-            //                                    .Where(pr => pr.ProcedureID == var)
-            //                                    .FirstOrDefaultAsync();
-            //    if (procedureItem != null)
-            //    {
-            //        proceduresList.Add(procedureItem);
-            //    }
-            //}
+
 
 
             for (int i = 0; i < (recordDTO.Quantity.Length); i++)
@@ -160,10 +167,13 @@ namespace DentalClinic.Services.MedicalRecordService
             record.DiscountPercent = recordDTO.DiscountPercent;
             record.Procedures = proceduresList;
             record.TotalAmount = totalPrice ; 
-            await _context.MedicalRecords.AddAsync(record);
+            _context.MedicalRecords.Update(record);
             await _context.SaveChangesAsync();
             return record;
         }
+
+
+
         public async Task<MedicalRecord> DeleteMedicalRecord(int MedicalRecordID)
         {
             var MedicalRecord = await _context.MedicalRecords.
@@ -173,41 +183,11 @@ namespace DentalClinic.Services.MedicalRecordService
            await _context.SaveChangesAsync();
             return MedicalRecord;
         }
-        //Medical record Update Not needed
-        //public async Task<MedicalRecord> UpdateMedicalRecord(UpdateMedicalRecordDTO medicalRecordDTO)
-        //{
-        //    var record = await _context.MedicalRecords
-        //                        .Where(mr=> mr.Medical_RecordID == medicalRecordDTO.MedicalRecordID)
-        //                        .FirstOrDefaultAsync()?? throw new KeyNotFoundException("Medical Record not Found!");
-        //    record.Patient = await _context.Patients
-        //                .Where(pa => pa.PatientId == medicalRecordDTO.PatientIdNo)
-        //                .FirstOrDefaultAsync();
-        //    var TreatmentBY = await _context.Employees
-        //                .Where(e => e.EmployeeId == medicalRecordDTO.TreatedByID)
-        //                .FirstOrDefaultAsync();
-        //    record.TreatedBy = TreatmentBY;
 
-        //}
-        //public async Task<List<MedicalRecord>> GetMedicalRecordforPatient(int patientID)
-        //{
-        //    var record = await _context.MedicalRecords
-        //                .Where(Mr => Mr.PatientId == patientID)
-        //                .Include(Mr => Mr.Procedures)
-        //                .ToListAsync();
-        //    if (record != null)
-        //    {
-        //        return record;
-        //    }
-
-        //    return new List<MedicalRecord>();
-
-
-
-        //}
         public async Task<List<DisplayMedicalRecordDTO>> GetAllMedicalRecords()
         {
             var records = await _context.MedicalRecords
-                                    .Include(r => r.Procedures)
+                                    //.Include(r => r.Procedures)
                                     .Include(r => r.Procedures)
                                     .Include(r => r.TreatedBy)
                                     .OrderByDescending(r => r.Date)
@@ -236,6 +216,13 @@ namespace DentalClinic.Services.MedicalRecordService
 
                 IsPaid = r.IsPaid,
                 isCard = r.IsCard,
+                IsHematology = r.IsHematology,
+                IsUrinalysis = r.IsUrinalysis,
+                IsBacterology = r.IsBacterology,
+                IsChemistry = r.IsChemistry,
+                IsStoolExamination = r.IsStoolExamination,
+                IsMicroscopy = r.IsMicroscopy,
+                IsSerology = r.IsSerology,
             }).ToList().OrderByDescending(r => r.date).ToList();
 
             if (recordDTOs == null)
@@ -266,42 +253,49 @@ namespace DentalClinic.Services.MedicalRecordService
             return records;
         }
 
-        public async Task<List<DisplayMedicalRecordDTO>> GetMedicalRecordById(int id)
+        public async Task<DisplayMedicalRecordDTO> GetMedicalRecordById(int id)
         {
-            var records = await _context.MedicalRecords
-                                 .Where(pp => pp.PatientId == id)
-                                 .Include(r=> r.Procedures)
-                                 .Include(r=> r.TreatedBy)
-                                 .ToListAsync();
-                                 
+            // Retrieve the single medical record
+            var record = await _context.MedicalRecords
+                                .Where(pp => pp.PatientId == id)
+                                .Include(r => r.Procedures)
+                                .Include(r => r.TreatedBy)
+                                .OrderByDescending(r => r.Date) // Order by date, if applicable
+                                .FirstOrDefaultAsync();
 
-            if (records != null)
+            if (record != null)
             {
-                var recordDTOs = records.Select(r => new DisplayMedicalRecordDTO
+                // Map the record to a DTO
+                var recordDTO = new DisplayMedicalRecordDTO
                 {
-                    Medical_RecordID = r.Medical_RecordID,
-                    PatientId = r.PatientId,
-                    TreatedById = r.TreatedById.HasValue ? r.TreatedById.Value : 0,
-                    TreatedByName = r.TreatedBy?.EmployeeName ?? "",
-                    PrescribedMedicinesandNotes = r.PrescribedMedicinesandNotes,
-                    ReferalsList = r.ReferalList,
-
-                    DiscountPercent = r.DiscountPercent,
-                    TotalAmount = r.TotalAmount,
-                    date = r.Date ?? DateTime.MinValue,
-                    SubTotalAmount = r.SubTotalAmount,
-                    ProceduresIDs = string.IsNullOrEmpty(r.ProcedureIDs)
+                    Medical_RecordID = record.Medical_RecordID,
+                    PatientId = record.PatientId,
+                    TreatedById = record.TreatedById.HasValue ? record.TreatedById.Value : 0,
+                    TreatedByName = record.TreatedBy?.EmployeeName ?? "",
+                    PrescribedMedicinesandNotes = record.PrescribedMedicinesandNotes,
+                    ReferalsList = record.ReferalList,
+                    DiscountPercent = record.DiscountPercent,
+                    TotalAmount = record.TotalAmount,
+                    date = record.Date ?? DateTime.MinValue,
+                    SubTotalAmount = record.SubTotalAmount,
+                    ProceduresIDs = string.IsNullOrEmpty(record.ProcedureIDs)
                         ? new int[] { 0 }
-                        : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
-
-                                        Quantity = string.IsNullOrEmpty(r.Quantities)
+                        : JsonSerializer.Deserialize<int[]>(record.ProcedureIDs),
+                    Quantity = string.IsNullOrEmpty(record.Quantities)
                         ? new int[] { 0 }
-                        : JsonSerializer.Deserialize<int[]>(r.Quantities),
-                    IsPaid = r.IsPaid,
-                    isCard = r.IsCard,
-                }).ToList().OrderByDescending(r => r.date).ToList();
+                        : JsonSerializer.Deserialize<int[]>(record.Quantities),
+                    IsPaid = record.IsPaid,
+                    isCard = record.IsCard,
+                    IsHematology = record.IsHematology,
+                    IsUrinalysis = record.IsUrinalysis,
+                    IsBacterology = record.IsBacterology,
+                    IsChemistry = record.IsChemistry,
+                    IsStoolExamination = record.IsStoolExamination,
+                    IsMicroscopy = record.IsMicroscopy,
+                    IsSerology = record.IsSerology,
+                };
 
-                return recordDTOs;
+                return recordDTO;
             }
             else
             {

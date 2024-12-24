@@ -143,11 +143,14 @@ namespace DentalClinic.Context
                 .HasMany(e => e.Prescriptions)
                 .WithOne(p => p.Emp)
                 .OnDelete(DeleteBehavior.SetNull);
+
+
             modelBuilder.Entity<MedicalRecord>()
                 .HasOne(mr => mr.Patient)
-                .WithMany(p => p.MedicalRecords)
-                .HasForeignKey(mr => mr.PatientId)
+                .WithOne(p => p.MedicalRecord) // Change WithMany to WithOne
+                .HasForeignKey<MedicalRecord>(mr => mr.PatientId) // Specify the foreign key
                 .OnDelete(DeleteBehavior.Cascade);
+
 
 
 

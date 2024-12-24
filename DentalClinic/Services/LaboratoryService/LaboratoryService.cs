@@ -44,11 +44,20 @@ namespace DentalClinic.Services.LaboratoryService
                 Diff = dd // Assign the Diff entity
             };
 
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
+            Patient? patient = await _context.Patients
+                .Where(p => p.PatientId == DTO.PatientId)
+                .Include(p=>p.MedicalRecord).FirstOrDefaultAsync();
+                //FindAsync(DTO.PatientId);
             if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
+
+            patient.MedicalRecord.IsHematology = true;
+
+            //_context.MedicalRecords.Update()
+
+            await _context.SaveChangesAsync();
 
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
@@ -100,9 +109,6 @@ namespace DentalClinic.Services.LaboratoryService
 
             return Hema;
         }
-
-
-
         public async Task<Urinalysis> AddUrinalysis(AddUrinalysisDTO DTO)
         {
             var uri = new Urinalysis
@@ -120,13 +126,18 @@ namespace DentalClinic.Services.LaboratoryService
                 Blood = DTO.Blood,
             };
 
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
-            if (patient == null)
+            Patient? patient = await _context.Patients
+                    .Where(p => p.PatientId == DTO.PatientId)
+                    .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
 
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+
+
+            patient.MedicalRecord.IsUrinalysis = true;
+
+            Employee ? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
             {
                 return null; // Return null if the requestedBy employee is not found
@@ -143,9 +154,11 @@ namespace DentalClinic.Services.LaboratoryService
 
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
 
+            if (labreqlist != null)
+            {
 
-            labreqlist.Status = "Complete";
-
+                labreqlist.Status = "Complete";
+            }
             _context.LaboratoryRequestLists.Update(labreqlist);
             labreq.isUrinalyis = true;
             if (labreq == null)
@@ -194,12 +207,21 @@ namespace DentalClinic.Services.LaboratoryService
                 HPyloryAg = DTO.HPyloryAg,
             };
 
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
-            if (patient == null)
+            Patient? patient = await _context.Patients
+                .Where(p => p.PatientId == DTO.PatientId)
+                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
 
+            patient.MedicalRecord.IsSerology = true;
+
+            //_context.MedicalRecords.Update()
+            
+            await _context.SaveChangesAsync();
+
+            
+            
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
             {
@@ -261,11 +283,18 @@ namespace DentalClinic.Services.LaboratoryService
                 OccultBlood = DTO.OccultBlood,
             };
 
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
-            if (patient == null)
+            Patient? patient = await _context.Patients
+                .Where(p => p.PatientId == DTO.PatientId)
+                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
+
+            patient.MedicalRecord.IsStoolExamination = true;
+
+            //_context.MedicalRecords.Update()
+
+            await _context.SaveChangesAsync();
 
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
@@ -330,11 +359,18 @@ namespace DentalClinic.Services.LaboratoryService
                 Hcg = DTO.Hcg,
             };
 
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
-            if (patient == null)
+            Patient? patient = await _context.Patients
+                .Where(p => p.PatientId == DTO.PatientId)
+                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
+
+            patient.MedicalRecord.IsMicroscopy = true;
+
+            //_context.MedicalRecords.Update()
+
+            await _context.SaveChangesAsync();
 
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
@@ -407,11 +443,19 @@ namespace DentalClinic.Services.LaboratoryService
                 Hdl = DTO.Hdl,
                 Ldl = DTO.Ldl,
             };
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
+            Patient? patient = await _context.Patients
+            .Where(p => p.PatientId == DTO.PatientId)
+            .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); 
             if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
+
+            patient.MedicalRecord.IsChemistry = true;
+
+            //_context.MedicalRecords.Update()
+
+            await _context.SaveChangesAsync();
 
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
@@ -481,11 +525,19 @@ namespace DentalClinic.Services.LaboratoryService
                 }
                 
             };
-            Patient? patient = await _context.Patients.FindAsync(DTO.PatientId);
+            Patient? patient = await _context.Patients
+                .Where(p => p.PatientId == DTO.PatientId)
+                .Include(p => p.MedicalRecord).FirstOrDefaultAsync();
             if (patient == null)
             {
                 return null; // Return null if the patient is not found
             }
+
+            patient.MedicalRecord.IsBacterology = true;
+
+            //_context.MedicalRecords.Update()
+
+            await _context.SaveChangesAsync();
 
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)

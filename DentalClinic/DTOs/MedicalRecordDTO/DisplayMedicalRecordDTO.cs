@@ -23,5 +23,13 @@ namespace DentalClinic.DTOs.MedicalRecordDTO
 
         public decimal SubTotalAmount { get; set; }
         public DateTime date { get; set; }
+
+        public bool IsHematology { get; set; }
+        public bool IsSerology { get; set; }
+        public bool IsStoolExamination { get; set; }
+        public bool IsMicroscopy { get; set; }
+        public bool IsChemistry { get; set; }
+        public bool IsBacterology { get; set; }
+        public bool IsUrinalysis { get; set; }
     }
 }

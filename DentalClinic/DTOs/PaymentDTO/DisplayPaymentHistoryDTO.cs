@@ -26,5 +26,10 @@ namespace DentalClinic.DTOs.PaymentDTO
 
         public List<ProcedureQuantityDTO>? ProcedureQuantity { get; set; }
 
+        public List<LabTest> LabTests { get; set; }
+
+
     }
+
+
 }

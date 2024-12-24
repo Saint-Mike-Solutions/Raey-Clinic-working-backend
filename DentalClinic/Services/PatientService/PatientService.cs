@@ -26,16 +26,14 @@ namespace DentalClinic.Services.PatientService
         {
             var patient = _mapper.Map<Patient>(patientDTO);
             patient.CreatedAt = DateTime.Now;
-            DateTime date = new DateTime(2000, 1, 1);
-
             patient.UpdatedAt = DateTime.Now;
+
             if (patientDTO.Age == 0)
             {
                 patient.Age = _toolsService.CalculateAge(patientDTO.DateOfBirth);
             }
             else
             {
-
                 patient.DateOfBirth = _toolsService.CalculateDOB(patient.Age);
             }
 
@@ -50,13 +48,47 @@ namespace DentalClinic.Services.PatientService
                 Serology = null,
                 Urinalysis = null,
                 StoolExamination = null,
+
+            };
+
+            var medicalRecord = new MedicalRecord
+            {
+                PatientId = 0, // Set to 0; will be updated once the patient is saved
+                Date = null,
+                PrescribedMedicinesandNotes = string.Empty,
+                ReferalList = string.Empty,
+                Procedures = null,
+                TreatedById = null,
+                DiscountPercent = 0,
+                TotalAmount = 0,
+                IsPaid = false,
+                ProcedureIDs = string.Empty,
+                Quantities = string.Empty,
+                SubTotalAmount = 0,
+                IsCard = false,
+                IsHematology = false,
+                IsSerology = false,
+                IsStoolExamination = false,
+                IsMicroscopy = false,
+                IsChemistry = false,
+                IsBacterology = false,
+                IsUrinalysis = false,
             };
 
             patient.LaboratoryRequests = lab;
+            patient.MedicalRecord = medicalRecord;
+
             var patientProfile = _mapper.Map<PatientProfile>(patientDTO);
             patient.Profile = patientProfile;
+
             _context.Patients.Add(patient);
             await _context.SaveChangesAsync();
+
+            // Update the MedicalRecord's PatientId after the Patient is saved
+            medicalRecord.PatientId = patient.PatientId;
+                //= patient.Id;
+            await _context.SaveChangesAsync();
+
             return patient;
         }
         public async Task<Patient> DeletePatient(int ID)
@@ -66,21 +98,21 @@ namespace DentalClinic.Services.PatientService
                                                  .Include(p=>p.HealthProgresses)
                                                  .Include(p=>p.Appointments)
                                                  .Include(p => p.Profile)
-                                                 .Include(p=>p.MedicalRecords)
+                                                 .Include(p=>p.MedicalRecord)
                                                  .Include(p=> p.Credits)
                                                 .FirstOrDefaultAsync();
-            if (patient != null)
-            {
-                // Step 2: Delete associated referrals
-                if(patient.MedicalRecords != null) 
-                {
-                    //var referralIds =  patient.MedicalRecords.SelectMany(mr => mr.Referals.Select(r => r.ReferalID)).ToList();
-                    //var referrals =  _context.Referals.Where(r => referralIds.Contains(r.ReferalID));
-                    //_context.Referals.RemoveRange(referrals);
-                    _context.MedicalRecords.RemoveRange(patient.MedicalRecords);
-                }
+            //if (patient != null)
+            //{
+            //    // Step 2: Delete associated referrals
+            //    if(patient.MedicalRecords != null) 
+            //    {
+            //        //var referralIds =  patient.MedicalRecords.SelectMany(mr => mr.Referals.Select(r => r.ReferalID)).ToList();
+            //        //var referrals =  _context.Referals.Where(r => referralIds.Contains(r.ReferalID));
+            //        //_context.Referals.RemoveRange(referrals);
+            //        _context.MedicalRecords.RemoveRange(patient.MedicalRecords);
+            //    }
 
-            }
+            //}
 
             if (patient == null) throw new KeyNotFoundException("Patient Not Found");
             _context.Patients.Remove(patient);

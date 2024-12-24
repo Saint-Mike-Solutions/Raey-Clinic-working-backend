@@ -42,7 +42,7 @@ namespace DentalClinic.Models
         public DateTime? UpdatedAt { get; set; }
         public List<HealthProgress>? HealthProgresses { get; set; }
 
-        public List<MedicalRecord>? MedicalRecords { get; set; }
+        public MedicalRecord MedicalRecord { get; set; }
 
         public PatientProfile? Profile { get; set; }
 

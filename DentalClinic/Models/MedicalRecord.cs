@@ -42,5 +42,17 @@ namespace DentalClinic.Models
 
         public bool IsCard { get; set; } = false;
 
+        public bool IsHematology { get; set; }
+        public bool IsSerology { get; set; }
+        public bool IsStoolExamination { get; set; }
+        public bool IsMicroscopy { get; set; }
+        public bool IsChemistry { get; set; }
+        public bool IsBacterology { get; set; }
+        public bool IsUrinalysis { get; set; }
+
+        public static implicit operator List<object>(MedicalRecord v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

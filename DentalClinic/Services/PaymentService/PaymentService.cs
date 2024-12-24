@@ -8,6 +8,7 @@ using DentalClinic.Migrations;
 using DentalClinic.Models;
 using DentalClinic.Services.Tools;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.Swagger;
 using System.Text.Json;
 
@@ -17,12 +18,16 @@ namespace DentalClinic.Services.PaymentService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<PaymentService> _logger;
+
         private readonly IToolsService _toolsService;
-        public PaymentService(DataContext context, IMapper mapper, IToolsService toolsService)
+        public PaymentService(DataContext context, IMapper mapper, IToolsService toolsService, ILogger<PaymentService> logger)
         {
             _context = context;
             _mapper = mapper;
             _toolsService = toolsService;
+            _logger = logger; // Inject the logger
+
         }
 
         public async Task<Payment> AddPaymentfromMedicalRecord(MakePaymentMedRecDTO DTO)
@@ -195,21 +200,27 @@ namespace DentalClinic.Services.PaymentService
                 }
 
             }
+            
+            
+            
             var procedureIDS = DTO.ProcedureIDs;
             var Quantities = DTO.Quantity;
-            var cards = await _context.Procedures.Where(p => p.ProcedureName == "card" || p.ProcedureName == "Card" || p.ProcedureName == "CARD").FirstOrDefaultAsync();
-            if (record.IsCard == true)
-            {
-                int[] val = { cards.ProcedureID };
-                int[] qua = { 1 };
-                procedureIDS = val.Concat(procedureIDS).ToArray();
-                Quantities =  qua.Concat(Quantities).ToArray();
-            }
+
+            //var cards = await _context.Procedures.Where(p => p.ProcedureName == "card" || p.ProcedureName == "Card" || p.ProcedureName == "CARD").FirstOrDefaultAsync();
+            //if (record.IsCard == true)
+            //{
+            //    int[] val = { cards.ProcedureID };
+            //    int[] qua = { 1 };
+            //    procedureIDS = val.Concat(procedureIDS).ToArray();
+            //    Quantities =  qua.Concat(Quantities).ToArray();
+            //}
 
 
 
             record.Quantities = JsonSerializer.Serialize(Quantities); 
             record.ProcedureIDs = JsonSerializer.Serialize(procedureIDS);
+            
+            
             var payment = new Payment
             {
                 IssuedByID = DTO.IssuedByID,
@@ -229,56 +240,88 @@ namespace DentalClinic.Services.PaymentService
 
             if (labreq != null)
             {
+                Console.WriteLine($"Lab request: {labreq}");
+
                 payment.LaboratoryRequests = labreq;
             }
+
             payment.MedicalRecord = record;
             record.IsPaid = true;
             record.IsCard = false;
             _context.MedicalRecords.Update(record);
-            var MedicalRecordsForPatient = await _context.MedicalRecords.Where(mr => mr.IsCard == true && mr.IsPaid == false).ToListAsync();
-            foreach (var mr in MedicalRecordsForPatient)
-            {
-                mr.IsCard = false;
-            }
-            foreach (var mr in MedicalRecordsForPatient)
-            {
-                _context.MedicalRecords.Update(mr);
-            }
+           
+            //var MedicalRecordsForPatient = await _context.MedicalRecords.Where(mr => mr.IsCard == true && mr.IsPaid == false).ToListAsync();
+            
+            //foreach (var mr in MedicalRecordsForPatient)
+            //{
+            //    mr.IsCard = false;
+            //}
+
+            //foreach (var mr in MedicalRecordsForPatient)
+            //{
+            //    _context.MedicalRecords.Update(mr);
+            //}
+            
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
             return payment;
         }
+
+
         public async Task<GetMDforPaymentDTO> GetMedicalRecordsforPayment(int id)
         {
             var record = await _context.MedicalRecords
-                                                   .OrderByDescending(a => a.Date)
-                                                   .Where(a => a.PatientId == id )
-                                                   .Where(a=> a.IsPaid == false)
-                                                   .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Medical Record Not Found, or Medical Record has been paid for");
+                .OrderByDescending(a => a.Date)
+                .Where(a => a.PatientId == id)
+                //.Where(a => a.IsPaid == false)
+                .FirstOrDefaultAsync()
+                ?? throw new KeyNotFoundException("Medical Record Not Found, or Medical Record has been paid for");
+
+            int[] proceduresArray = string.IsNullOrEmpty(record.ProcedureIDs)
+                ? new int[] { 0 }
+                : JsonSerializer.Deserialize<int[]>(record.ProcedureIDs);
+
+            int[] quantityArray = string.IsNullOrEmpty(record.Quantities)
+                ? new int[] { 0 }
+                : JsonSerializer.Deserialize<int[]>(record.Quantities);
+
+            var lab = await _context.CompanyLabPrices.FirstOrDefaultAsync();
+            if (lab == null)
+            {
+                throw new Exception("Lab prices not found.");
+            }
 
 
-            int[] proceduresArray = 
-            string.IsNullOrEmpty(record.ProcedureIDs)? new int[] { 0 }: JsonSerializer.Deserialize<int[]>(record.ProcedureIDs);
-            int[] quantityArray = 
-            string.IsNullOrEmpty(record.Quantities) ? new int[] { 0 } : JsonSerializer.Deserialize<int[]>(record.Quantities);
+            var labTests = new List<LabTest>
+                {
+                    new LabTest { Name = "Hematology", IsTestSelected = record.IsHematology, Price = lab.HematologyPrice },
+                    new LabTest { Name = "Serology", IsTestSelected = record.IsSerology, Price = lab.SerologyPrice },
+                    new LabTest { Name = "StoolExamination", IsTestSelected = record.IsStoolExamination, Price = lab.StoolExamPrice },
+                    new LabTest { Name = "Microscopy", IsTestSelected = record.IsMicroscopy, Price = lab.MicroscopyPrice },
+                    new LabTest { Name = "Chemistry", IsTestSelected = record.IsChemistry, Price = lab.ChemistryPrice },
+                    new LabTest { Name = "Bacterology", IsTestSelected = record.IsBacterology, Price = lab.BacterologyPrice },
+                    new LabTest { Name = "Urinalysis", IsTestSelected = record.IsUrinalysis, Price = lab.UrinalysisPrice }
+                };
 
             var display = new GetMDforPaymentDTO
             {
                 PatientId = record.PatientId,
                 MedicalRecordID = record.Medical_RecordID,
                 Discount = record.DiscountPercent,
-                IssuedBy = (int)record.TreatedById, // Adding a null-conditional operator here
-                MedicalRecordDate = (DateTime)record.Date,
+                IssuedBy = record.TreatedById ?? 0, // Default to 0 if null
+                MedicalRecordDate = record.Date ?? DateTime.MinValue, // Default to MinValue if null
                 SubTotal = record.SubTotalAmount,
                 Total = record.TotalAmount,
                 ProcedureIDs = proceduresArray,
                 Quantity = quantityArray,
-                isCard = record.IsCard,   
+                isCard = record.IsCard,
+
+                LabTests = labTests // Use the List of LabTest objects
             };
 
             return display;
-
         }
+
         public async Task<List<Payment>> PaymentLogForPatient(int DTO)
         {
             var PaymentRecord = await _context.Payments.Where(p=> p.PatientID == DTO)
@@ -288,10 +331,10 @@ namespace DentalClinic.Services.PaymentService
                                                         .ToListAsync();
             return PaymentRecord;
         }
-        public async Task<DisplayPaymentHistoryDTO> PaymentHistoryDetails(int DTO)
+        public async Task<DisplayPaymentHistoryDTO> PaymentHistoryDetails(int paymentID)
         {
             var data = await _context.Payments
-                                        .Where(p => p.Id == DTO)
+                                        .Where(p => p.Id == paymentID)
                                         .Include(p => p.MedicalRecord)
                                         .Include(p => p.LaboratoryRequests)
                                         .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Payment Record Not Found");
@@ -342,6 +385,29 @@ namespace DentalClinic.Services.PaymentService
                     DisplayRecord.ProcedureQuantity.Add(pro);
                 }
             }
+
+            var record = await _context.MedicalRecords
+                .OrderByDescending(a => a.Date)
+                .Where(a => a.PatientId == data.PatientID)
+                //.Where(a => a.IsPaid == false)
+                .FirstOrDefaultAsync()
+                ?? throw new KeyNotFoundException("Medical Record Not Found, or Medical Record has been paid for");
+
+            var lab = await _context.CompanyLabPrices.FirstOrDefaultAsync();
+
+
+            var labTests = new List<LabTest>
+                {
+                    new LabTest { Name = "Hematology", IsTestSelected = record.IsHematology, Price = lab.HematologyPrice },
+                    new LabTest { Name = "Serology", IsTestSelected = record.IsSerology, Price = lab.SerologyPrice },
+                    new LabTest { Name = "StoolExamination", IsTestSelected = record.IsStoolExamination, Price = lab.StoolExamPrice },
+                    new LabTest { Name = "Microscopy", IsTestSelected = record.IsMicroscopy, Price = lab.MicroscopyPrice },
+                    new LabTest { Name = "Chemistry", IsTestSelected = record.IsChemistry, Price = lab.ChemistryPrice },
+                    new LabTest { Name = "Bacterology", IsTestSelected = record.IsBacterology, Price = lab.BacterologyPrice },
+                    new LabTest { Name = "Urinalysis", IsTestSelected = record.IsUrinalysis, Price = lab.UrinalysisPrice }
+                };
+
+            DisplayRecord.LabTests = labTests;
 
             return DisplayRecord;
         }
