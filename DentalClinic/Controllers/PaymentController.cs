@@ -83,19 +83,35 @@ namespace DentalClinic.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponse { Message = ex.Message });
+                return NotFound(new ErrorResponse
+                {
+                    Message = "The specified key was not found. Please check your input.",
+                    Details = ex.Message
+                });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponse { Message = ex.Message });
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "Invalid argument provided. Please check your request.",
+                    Details = ex.Message
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new ErrorResponse { Message = ex.Message });
+                return Conflict(new ErrorResponse
+                {
+                    Message = "The requested operation is not valid in the current state.",
+                    Details = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
+                {
+                    Message = "An unexpected error occurred on the server.",
+                    Details = GetFullExceptionMessage(ex)
+                });
             }
 
         }
@@ -108,19 +124,35 @@ namespace DentalClinic.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponse { Message = ex.Message });
+                return NotFound(new ErrorResponse
+                {
+                    Message = "The specified key was not found. Please check your input.",
+                    Details = ex.Message
+                });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponse { Message = ex.Message });
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "Invalid argument provided. Please check your request.",
+                    Details = ex.Message
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new ErrorResponse { Message = ex.Message });
+                return Conflict(new ErrorResponse
+                {
+                    Message = "The requested operation is not valid in the current state.",
+                    Details = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
+                {
+                    Message = "An unexpected error occurred on the server.",
+                    Details = GetFullExceptionMessage(ex)
+                });
             }
 
         }
@@ -135,19 +167,35 @@ namespace DentalClinic.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponse { Message = ex.Message });
+                return NotFound(new ErrorResponse
+                {
+                    Message = "The specified key was not found. Please check your input.",
+                    Details = ex.Message
+                });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponse { Message = ex.Message });
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "Invalid argument provided. Please check your request.",
+                    Details = ex.Message
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new ErrorResponse { Message = ex.Message });
+                return Conflict(new ErrorResponse
+                {
+                    Message = "The requested operation is not valid in the current state.",
+                    Details = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
+                {
+                    Message = "An unexpected error occurred on the server.",
+                    Details = GetFullExceptionMessage(ex)
+                });
             }
 
         }
@@ -160,19 +208,35 @@ namespace DentalClinic.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(new ErrorResponse { Message = ex.Message });
+                return NotFound(new ErrorResponse
+                {
+                    Message = "The specified key was not found. Please check your input.",
+                    Details = ex.Message
+                });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new ErrorResponse { Message = ex.Message });
+                return BadRequest(new ErrorResponse
+                {
+                    Message = "Invalid argument provided. Please check your request.",
+                    Details = ex.Message
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new ErrorResponse { Message = ex.Message });
+                return Conflict(new ErrorResponse
+                {
+                    Message = "The requested operation is not valid in the current state.",
+                    Details = ex.Message
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = "Internal Server Error" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
+                {
+                    Message = "An unexpected error occurred on the server.",
+                    Details = GetFullExceptionMessage(ex)
+                });
             }
 
         }
