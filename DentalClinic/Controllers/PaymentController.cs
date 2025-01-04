@@ -234,7 +234,7 @@ namespace DentalClinic.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse
                 {
-                    Message = "An unexpected error occurred on the server.",
+                    Message = "An unexpected error occurred on the servers.",
                     Details = GetFullExceptionMessage(ex)
                 });
             }
