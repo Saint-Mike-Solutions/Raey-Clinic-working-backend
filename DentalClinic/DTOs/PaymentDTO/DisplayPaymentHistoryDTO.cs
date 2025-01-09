@@ -24,6 +24,8 @@ namespace DentalClinic.DTOs.PaymentDTO
 
         public string? ImageAttachment { get; set; }
 
+        public int isPaid { get; set; }
+
         public List<ProcedureQuantityDTO>? ProcedureQuantity { get; set; }
 
         public List<LabTest> LabTests { get; set; }

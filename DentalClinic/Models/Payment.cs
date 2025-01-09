@@ -35,6 +35,8 @@ namespace DentalClinic.Models
         public LaboratoryRequests? LaboratoryRequests { get; set; }
 
         public MedicalRecord? MedicalRecord { get; set; }
+
+        public bool IsPaid { get; set; }
          
         }
     }

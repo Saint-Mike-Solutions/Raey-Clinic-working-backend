@@ -153,6 +153,7 @@ namespace DentalClinic.Services.PaymentService
                 }
 
                 _context.MedicalRecords.Add(newMedicalRecord);
+                newPayment.IsPaid = true;
                 _context.Payments.Add(newPayment);
                 await _context.SaveChangesAsync();
                 return newPayment;
@@ -249,9 +250,9 @@ namespace DentalClinic.Services.PaymentService
             record.IsPaid = true;
             record.IsCard = false;
             _context.MedicalRecords.Update(record);
-           
+
             //var MedicalRecordsForPatient = await _context.MedicalRecords.Where(mr => mr.IsCard == true && mr.IsPaid == false).ToListAsync();
-            
+
             //foreach (var mr in MedicalRecordsForPatient)
             //{
             //    mr.IsCard = false;
@@ -261,7 +262,7 @@ namespace DentalClinic.Services.PaymentService
             //{
             //    _context.MedicalRecords.Update(mr);
             //}
-            
+            payment.IsPaid = true;
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
             return payment;
@@ -315,7 +316,7 @@ namespace DentalClinic.Services.PaymentService
                 ProcedureIDs = proceduresArray,
                 Quantity = quantityArray,
                 isCard = record.IsCard,
-
+                isPaid = record.IsPaid,
                 LabTests = labTests // Use the List of LabTest objects
             };
 
@@ -357,6 +358,8 @@ namespace DentalClinic.Services.PaymentService
                 MobileBanking = data.MobileBanking,
                 ReferenceNumber = data.ReferenceNumber,
                 ImageAttachment = data.ImageAttachment,
+                //isPaid = data.IsPaid,
+
                 ProcedureQuantity = new List<ProcedureQuantityDTO>()
             };
 

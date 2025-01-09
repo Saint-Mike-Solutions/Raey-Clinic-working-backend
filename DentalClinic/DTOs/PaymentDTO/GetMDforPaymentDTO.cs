@@ -17,6 +17,7 @@ namespace DentalClinic.DTOs.PaymentDTO
         public int[] Quantity { get; set; }
         public bool isCard { get; set; }
 
+        public bool isPaid { get; set; }
         // List of LabTest objects to represent the lab tests and their prices
         public List<LabTest> LabTests { get; set; }
     }
