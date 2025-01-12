@@ -69,6 +69,7 @@ namespace DentalClinic.Models
         //[System.Text.Jso n.Serialization.JsonIgnore]
 
         public LaboratoryRequests? LaboratoryRequests { get; set; }
+        public Payment? Payment { get; set; }
 
 
         public List<LaboratoryRequestList>? LaboratoryRequestsList { get; set; }

@@ -43,6 +43,8 @@ namespace DentalClinic.DTOs.PatientDTO
         public bool CardNeeded { get; set; }
         public string Chronics { get; set; } = string.Empty;
 
+        public bool isPaid { get; set; }
+
         public List<Referral> referals { get; set; }
 
         public List<Prescription> prescriptions { get; set; }

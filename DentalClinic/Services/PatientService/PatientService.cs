@@ -169,36 +169,35 @@ namespace DentalClinic.Services.PatientService
                 .Include(p => p.Prescriptions)              // Include Prescriptions
                 .Include(p => p.Referrals)                  // Include Referrals
                 .ToListAsync();
-
             var compSettings = await _context.CompanySettings.FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Company Settings Not Found!");
             var cardExpireAfter = compSettings.CardExpireAfter;
 
 
             // Create a list of PatientDTO with calculated ages
-            var patientDTOs = patients.Select(patients => new DisplayPatientDTO
+            var patientDTOs = patients.Select(patient => new DisplayPatientDTO
             {
-                PatientId = patients.PatientId,
-                PatientFullName = patients.PatientFullName,
-                Age = _toolsService.CalculateAge(patients.DateOfBirth ?? DateTime.MinValue),
-                Phone = patients.Phone,
-                Gender = patients.Gender,
-                Country = patients.Country,
-                City = patients.City,
-                Subcity = patients.Subcity,
-                Address = patients.Address,
-                CreatedAt = patients.CreatedAt,
-                UpdateAt = patients.UpdatedAt ?? date,
-                Weight = patients.Weight,
-                Region = patients.Region,
-                Town = patients.Town,
-                Woreda = patients.Woreda,
-                Kebele = patients.Kebele,
-                HouseNumber = patients.HouseNumber,
-                DateOfBirth = patients.DateOfBirth ?? DateTime.MinValue,
-                laboratoryRequests = patients.LaboratoryRequests,
-                prescriptions = patients.Prescriptions,
-                referals = patients.Referrals,
-
+                PatientId = patient.PatientId,
+                PatientFullName = patient.PatientFullName,
+                Age = _toolsService.CalculateAge(patient.DateOfBirth ?? DateTime.MinValue),
+                Phone = patient.Phone,
+                Gender = patient.Gender,
+                Country = patient.Country,
+                City = patient.City,
+                Subcity = patient.Subcity,
+                Address = patient.Address,
+                CreatedAt = patient.CreatedAt,
+                UpdateAt = patient.UpdatedAt ?? date,
+                Weight = patient.Weight,
+                Region = patient.Region,
+                Town = patient.Town,
+                Woreda = patient.Woreda,
+                Kebele = patient.Kebele,
+                HouseNumber = patient.HouseNumber,
+                DateOfBirth = patient.DateOfBirth ?? DateTime.MinValue,
+                laboratoryRequests = patient.LaboratoryRequests,
+                prescriptions = patient.Prescriptions,
+                referals = patient.Referrals,
+                isPaid = patient.Payment?.IsPaid ?? false // If Payment is null, default to false
             }).ToList();
 
             return patientDTOs;

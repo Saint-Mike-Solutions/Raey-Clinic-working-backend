@@ -229,11 +229,18 @@ namespace DentalClinic.Context
                 .HasForeignKey(l => l.ReportedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<LaboratoryRequestList>()
-            //    .HasOne(lr => lr.labratoryRequest)
-            //    .WithMany(l => l.LabrequestLists)
-            //    .HasForeignKey(lr => lr.laboratoryrequestId);
-        }
+            // Configure one-to-one relationship between Patient and Payment
+            modelBuilder.Entity<Patient>()
+                .HasOne(p => p.Payment)       // Patient has one Payment
+                .WithOne(p => p.Patient)     // Payment has one Patient
+                .HasForeignKey<Payment>(p => p.PatientID); // FK in Payment table
 
+
+        //modelBuilder.Entity<LaboratoryRequestList>()
+        //    .HasOne(lr => lr.labratoryRequest)
+        //    .WithMany(l => l.LabrequestLists)
+        //    .HasForeignKey(lr => lr.laboratoryrequestId);
     }
+
+}
 }
