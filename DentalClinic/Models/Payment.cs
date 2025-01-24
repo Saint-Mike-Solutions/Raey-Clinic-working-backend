@@ -37,6 +37,10 @@ namespace DentalClinic.Models
         public MedicalRecord? MedicalRecord { get; set; }
 
         public bool IsPaid { get; set; }
+
+        public bool HasConsultationFee { get; set; }
+
+        public decimal ? ConsultationPrice { get; set; }
          
         }
     }

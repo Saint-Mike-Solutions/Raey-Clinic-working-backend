@@ -18,6 +18,10 @@ namespace DentalClinic.DTOs.PaymentDTO
         public bool isCard { get; set; }
 
         public bool isPaid { get; set; }
+
+        //public bool HasConsultationFee { get; set; }
+
+        //public decimal? ConsultationPrice { get; set; }
         // List of LabTest objects to represent the lab tests and their prices
         public List<LabTest> LabTests { get; set; }
     }

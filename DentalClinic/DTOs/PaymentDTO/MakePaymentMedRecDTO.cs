@@ -28,5 +28,9 @@
         public string? MobileBanking { get; set; }
 
         public string? ImageAttachment { get; set; }
+
+        public bool HasConsultationFee { get; set; }
+
+        public decimal? ConsultationPrice { get; set; }
     }
 }

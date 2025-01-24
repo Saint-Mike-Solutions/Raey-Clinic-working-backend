@@ -138,7 +138,10 @@ namespace DentalClinic.Services.PaymentService
                     ReferenceNumber = DTO.ReferenceNumber,
                     ImageAttachment = DTO.ImageAttachment,
                     MobileBanking = DTO.MobileBanking,
+                    HasConsultationFee = DTO.HasConsultationFee,
+                    ConsultationPrice = DTO.ConsultationPrice
                 };
+
 
                 newPayment.MedicalRecord = newMedicalRecord;
 
@@ -234,7 +237,9 @@ namespace DentalClinic.Services.PaymentService
                 IsCredit = DTO.IsCredit,
                 ReferenceNumber = DTO.ReferenceNumber,
                 ImageAttachment = DTO.ImageAttachment,
-                MobileBanking = DTO.MobileBanking
+                MobileBanking = DTO.MobileBanking,
+                HasConsultationFee = DTO.HasConsultationFee,
+                ConsultationPrice = DTO.ConsultationPrice
             };
 
             var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == DTO.PatientID);
