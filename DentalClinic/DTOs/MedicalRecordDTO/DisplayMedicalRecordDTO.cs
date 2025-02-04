@@ -31,5 +31,10 @@ namespace DentalClinic.DTOs.MedicalRecordDTO
         public bool IsChemistry { get; set; }
         public bool IsBacterology { get; set; }
         public bool IsUrinalysis { get; set; }
+
+        public bool HasConsultationFee { get; set; }
+
+        public decimal? ConsultationPrice { get; set; }
+
     }
 }

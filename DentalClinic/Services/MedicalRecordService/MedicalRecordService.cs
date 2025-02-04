@@ -167,6 +167,10 @@ namespace DentalClinic.Services.MedicalRecordService
             record.DiscountPercent = recordDTO.DiscountPercent;
             record.Procedures = proceduresList;
             record.TotalAmount = totalPrice ; 
+
+            record.ConsultationPrice = recordDTO.ConsultationPrice;
+            record.HasConsultationFee = recordDTO.HasConsultationFee;
+
             _context.MedicalRecords.Update(record);
             await _context.SaveChangesAsync();
             return record;
@@ -223,6 +227,8 @@ namespace DentalClinic.Services.MedicalRecordService
                 IsStoolExamination = r.IsStoolExamination,
                 IsMicroscopy = r.IsMicroscopy,
                 IsSerology = r.IsSerology,
+                HasConsultationFee = r.HasConsultationFee,
+                ConsultationPrice = r.ConsultationPrice,
             }).ToList().OrderByDescending(r => r.date).ToList();
 
             if (recordDTOs == null)
@@ -293,6 +299,8 @@ namespace DentalClinic.Services.MedicalRecordService
                     IsStoolExamination = record.IsStoolExamination,
                     IsMicroscopy = record.IsMicroscopy,
                     IsSerology = record.IsSerology,
+                    HasConsultationFee = record.HasConsultationFee,
+                    ConsultationPrice = record.ConsultationPrice,
                 };
 
                 return recordDTO;

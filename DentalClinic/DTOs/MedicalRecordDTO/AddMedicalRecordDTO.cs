@@ -19,7 +19,11 @@ namespace DentalClinic.DTOs.MedicalRecordDTO
 
         public int DiscountPercent { get; set; }
 
- 
+        public bool HasConsultationFee { get; set; }
+
+        public decimal? ConsultationPrice { get; set; }
+
+
 
 
     }

@@ -50,6 +50,10 @@ namespace DentalClinic.Models
         public bool IsBacterology { get; set; }
         public bool IsUrinalysis { get; set; }
 
+        public bool HasConsultationFee { get; set; }
+
+        public decimal? ConsultationPrice { get; set; }
+
         public static implicit operator List<object>(MedicalRecord v)
         {
             throw new NotImplementedException();
