@@ -4,6 +4,7 @@ using DentalClinic.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalClinic.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250208172519_SpecialCasesAdded")]
+    partial class SpecialCasesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1513,28 +1516,6 @@ namespace DentalClinic.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Serologies");
-                });
-
-            modelBuilder.Entity("DentalClinic.Models.SpecialCases", b =>
-                {
-                    b.Property<int>("SpecialCaesId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SpecialCaesId"));
-
-                    b.Property<DateTime>("AddedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SpecialCaesName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("SpecialCaesId");
-
-                    b.ToTable("SpecialCases");
                 });
 
             modelBuilder.Entity("DentalClinic.Models.StoolExamination", b =>

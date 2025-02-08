@@ -19,6 +19,10 @@ namespace DentalClinic.DTOs.PaymentDTO
 
         public bool isPaid { get; set; }
 
+        public Decimal? ConsultationFee { get; set; }
+
+        public bool hasConsultationFee { get; set; }
+
         //public bool HasConsultationFee { get; set; }
 
         //public decimal? ConsultationPrice { get; set; }

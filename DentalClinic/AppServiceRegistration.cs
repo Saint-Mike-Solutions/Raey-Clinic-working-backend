@@ -21,6 +21,7 @@ using DentalClinic.Services.ReferralService;
 using DentalClinic.Services.ReportService;
 using DentalClinic.Services.RoleService;
 using DentalClinic.Services.SMSSettingService;
+using DentalClinic.Services.SpecialCasesService;
 using DentalClinic.Services.Tools;
 using DentalClinic.Services.User;
 using System.ComponentModel.Design;
@@ -60,6 +61,8 @@ namespace DentalClinic
             services.AddScoped<ILaboratoryService, LaboratoryService>();
             services.AddScoped<ILaboratoryRequestListService, LaboratoryRequestListService>();
             services.AddScoped<ICompanyLabPricesService, CompanyLabPricesService>();
+
+            services.AddScoped<ISpecialCasesService, SpecialCasesService>();
         }
 
     }

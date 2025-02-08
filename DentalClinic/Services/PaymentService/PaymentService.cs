@@ -322,7 +322,13 @@ namespace DentalClinic.Services.PaymentService
                 Quantity = quantityArray,
                 isCard = record.IsCard,
                 isPaid = record.IsPaid,
-                LabTests = labTests // Use the List of LabTest objects
+                LabTests = labTests,
+                ConsultationFee = record.ConsultationPrice,
+                hasConsultationFee = record.HasConsultationFee,
+
+                
+               
+                // Use the List of LabTest objects
             };
 
             return display;
@@ -363,6 +369,12 @@ namespace DentalClinic.Services.PaymentService
                 MobileBanking = data.MobileBanking,
                 ReferenceNumber = data.ReferenceNumber,
                 ImageAttachment = data.ImageAttachment,
+                HasConsultationFee = data.HasConsultationFee,
+                //isPaid = data.IsPaid,
+                ConsultationFee = data.ConsultationPrice,
+
+                isPaid = data.IsPaid,
+                
                 //isPaid = data.IsPaid,
 
                 ProcedureQuantity = new List<ProcedureQuantityDTO>()

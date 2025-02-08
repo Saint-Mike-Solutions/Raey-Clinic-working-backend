@@ -515,6 +515,8 @@ namespace DentalClinic.Services.ReportService
 
         // Inner class private method
 
+        //public async Task<>
+
         // procedure wise amount
         public async Task<List<ProcedureRevenue>> GetProcedureRevenues(DateTimeRangeDTO DTO)
         {

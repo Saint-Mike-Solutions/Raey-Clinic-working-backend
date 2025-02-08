@@ -80,6 +80,8 @@ namespace DentalClinic.Context
         public DbSet<LaboratoryRequestList> LaboratoryRequestLists { get; set; }
 
         public DbSet<CompanyLabPrices> CompanyLabPrices { get; set; }
+
+        public DbSet<SpecialCases> SpecialCases { get; set; }
         //public DbSet<ProcedureQuantity> ProcedureQuantity { get; set; }
 
 
