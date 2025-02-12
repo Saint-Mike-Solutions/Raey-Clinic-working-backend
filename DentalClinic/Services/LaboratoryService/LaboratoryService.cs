@@ -22,6 +22,18 @@ namespace DentalClinic.Services.LaboratoryService
 
         public async Task<Hematology> AddHematology(AddHematologyDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+            var labreqList = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
             var dd = new Diff
             {
                 N = DTO.HemaN,
@@ -44,73 +56,60 @@ namespace DentalClinic.Services.LaboratoryService
                 Diff = dd // Assign the Diff entity
             };
 
-            Patient? patient = await _context.Patients
-                .Where(p => p.PatientId == DTO.PatientId)
-                .Include(p=>p.MedicalRecord).FirstOrDefaultAsync();
-                //FindAsync(DTO.PatientId);
-            if (patient == null)
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreq == null)
             {
-                return null; // Return null if the patient is not found
+                throw new Exception("Lab request not found");
             }
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
 
-            patient.MedicalRecord.IsHematology = true;
-
-            //_context.MedicalRecords.Update()
-
-            await _context.SaveChangesAsync();
-
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
+            if (medicalRecord == null)
             {
-                return null; // Return null if the requestedBy employee is not found
+                throw new Exception("Medical record not found!");
             }
-
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
-            {
-                return null; // Return null if the reportedBy employee is not found
-            }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            medicalRecord.IsHematology = true;
 
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
+            }
+
+
 
             labreqlist.Status = "Complete";
 
-            _context.LaboratoryRequestLists.Update(labreqlist);
+            //labreqlist.SatusCounter = labreqlist.SatusCounter + 1;
 
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Hematology = Hema // Assign Hematology to the new lab request
-                };
 
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.Hematology = Hema;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-                labreq.Patient = patient;
 
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
-
+            labreq.Hematology = Hema;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
             labreq.isHematology = true;
+            _context.LaboratoryRequests.Update(labreq);
+            _context.LaboratoryRequestLists.Update(labreqlist);
+            _context.MedicalRecords.Update(medicalRecord);
             await _context.SaveChangesAsync();
 
             return Hema;
         }
         public async Task<Urinalysis> AddUrinalysis(AddUrinalysisDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
             var uri = new Urinalysis
             {
                 Color = DTO.Color,
@@ -126,64 +125,45 @@ namespace DentalClinic.Services.LaboratoryService
                 Blood = DTO.Blood,
             };
 
-            Patient? patient = await _context.Patients
-                    .Where(p => p.PatientId == DTO.PatientId)
-                    .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreq == null)
             {
-                return null; // Return null if the patient is not found
+                throw new Exception("Lab request not found");
             }
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
 
-
-
-            patient.MedicalRecord.IsUrinalysis = true;
-
-            Employee ? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
+            if (medicalRecord == null)
             {
-                return null; // Return null if the requestedBy employee is not found
+                throw new Exception("Medical record not found!");
             }
-
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
-            {
-                return null; // Return null if the reportedBy employee is not found
-            }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            medicalRecord.IsUrinalysis = true;
 
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
+            }
+
+
+
+
 
             if (labreqlist != null)
             {
 
                 labreqlist.Status = "Complete";
             }
-            _context.LaboratoryRequestLists.Update(labreqlist);
             labreq.isUrinalyis = true;
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Urinalysis = uri // Assign Hematology to the new lab request
-                };
+            labreq.Urinalysis = uri;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
 
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.Urinalysis = uri;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.Patient = patient;
-
-                labreq.RequestedById = DTO.RequestedById;
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
+            _context.LaboratoryRequestLists.Update(labreqlist);
+            _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
+            _context.MedicalRecords.Update(medicalRecord);
+            
 
 
             await _context.SaveChangesAsync();
@@ -194,6 +174,17 @@ namespace DentalClinic.Services.LaboratoryService
 
         public async Task<Serology> AddSerology(AddSerologyDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
             var ser = new Serology
             {
                 Vdlr = DTO.Vdlr,
@@ -207,65 +198,50 @@ namespace DentalClinic.Services.LaboratoryService
                 HPyloryAg = DTO.HPyloryAg,
             };
 
-            Patient? patient = await _context.Patients
-                .Where(p => p.PatientId == DTO.PatientId)
-                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
-            {
-                return null; // Return null if the patient is not found
-            }
 
-            patient.MedicalRecord.IsSerology = true;
+
 
             //_context.MedicalRecords.Update()
-            
-            await _context.SaveChangesAsync();
 
-            
-            
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
+
+
+
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreq == null)
             {
-                return null; // Return null if the requestedBy employee is not found
+                throw new Exception("Lab request not found");
             }
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
 
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
+            if (medicalRecord == null)
             {
-                return null; // Return null if the reportedBy employee is not found
+                throw new Exception("Medical record not found!");
             }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
+            medicalRecord.IsSerology = true;
 
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
+            }
+
 
 
             labreqlist.Status = "Complete";
             labreq.isSerology = true;
+
+
+            // Update the existing lab request
+            labreq.Serology = ser;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
+
             _context.LaboratoryRequestLists.Update(labreqlist);
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Serology = ser // Assign Hematology to the new lab request
-                };
-
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.Serology = ser;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-                labreq.Patient = patient;
-
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
+            _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
+            _context.MedicalRecords.Update(medicalRecord);
+ 
 
             await _context.SaveChangesAsync();
 
@@ -275,6 +251,17 @@ namespace DentalClinic.Services.LaboratoryService
 
         public async Task<StoolExamination> AddStoolExamination(AddStoolExaminationDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
             var stool = new StoolExamination
             {
                 Consistency = DTO.Consistency,
@@ -283,62 +270,44 @@ namespace DentalClinic.Services.LaboratoryService
                 OccultBlood = DTO.OccultBlood,
             };
 
-            Patient? patient = await _context.Patients
-                .Where(p => p.PatientId == DTO.PatientId)
-                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
+
+
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreq == null)
             {
-                return null; // Return null if the patient is not found
+                throw new Exception("Lab request not found");
             }
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
 
-            patient.MedicalRecord.IsStoolExamination = true;
-
-            //_context.MedicalRecords.Update()
-
-            await _context.SaveChangesAsync();
-
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
+            if (medicalRecord == null)
             {
-                return null; // Return null if the requestedBy employee is not found
+                throw new Exception("Medical record not found!");
             }
+            medicalRecord.IsStoolExamination = true;
 
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
-            {
-                return null; // Return null if the reportedBy employee is not found
-            }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
+            }
+
+
+
+
 
 
             labreqlist.Status = "Complete";
-            labreq.isStoolExamination = true;
+            //labreq.isStoolExamination = true;
+
+            labreq.StoolExamination = stool;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
+
             _context.LaboratoryRequestLists.Update(labreqlist);
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    StoolExamination = stool // Assign Hematology to the new lab request
-                };
-
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.StoolExamination = stool;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-                labreq.Patient = patient;
-
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
+            _context.LaboratoryRequests.Update(labreq);
+           
 
             await _context.SaveChangesAsync();
 
@@ -348,6 +317,17 @@ namespace DentalClinic.Services.LaboratoryService
 
         public async Task<Microscopy> AddMicroscopy(AddMicroscopyDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
             var micro = new Microscopy
             {
                 EpitCells = DTO.EpitCells,
@@ -359,19 +339,49 @@ namespace DentalClinic.Services.LaboratoryService
                 Hcg = DTO.Hcg,
             };
 
-            Patient? patient = await _context.Patients
-                .Where(p => p.PatientId == DTO.PatientId)
-                .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); if (patient == null)
+
+
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreq == null)
             {
-                return null; // Return null if the patient is not found
+                throw new Exception("Lab request not found");
+            }
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
+
+            if (medicalRecord == null)
+            {
+                throw new Exception("Medical record not found!");
+            }
+            medicalRecord.IsMicroscopy = true;
+
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
             }
 
-            patient.MedicalRecord.IsMicroscopy = true;
 
-            //_context.MedicalRecords.Update()
 
+
+
+            labreqlist.Status = "Complete";
+            labreq.Microscopy = micro;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
+
+            _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
+            _context.MedicalRecords.Update(medicalRecord);
+            _context.LaboratoryRequestLists.Update(labreqlist);
             await _context.SaveChangesAsync();
 
+            return micro;
+        }
+
+
+        public async Task<Chemistry> AddChemistry(AddChemistryDTO DTO)
+        {
             Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
             if (requestedBy == null)
             {
@@ -383,47 +393,6 @@ namespace DentalClinic.Services.LaboratoryService
             {
                 return null; // Return null if the reportedBy employee is not found
             }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
-            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
-
-            labreq.isMicroscopy = true;
-            labreqlist.Status = "Complete";
-
-            _context.LaboratoryRequestLists.Update(labreqlist);
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Microscopy = micro // Assign Hematology to the new lab request
-                };
-
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.Microscopy = micro;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.Patient = patient;
-
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
-
-            await _context.SaveChangesAsync();
-
-            return micro;
-        }
-
-
-        public async Task<Chemistry> AddChemistry(AddChemistryDTO DTO)
-        {
             var chemistry = new Chemistry
             {
                 FbsRbs = DTO.FbsRbs,
@@ -443,63 +412,41 @@ namespace DentalClinic.Services.LaboratoryService
                 Hdl = DTO.Hdl,
                 Ldl = DTO.Ldl,
             };
-            Patient? patient = await _context.Patients
-            .Where(p => p.PatientId == DTO.PatientId)
-            .Include(p => p.MedicalRecord).FirstOrDefaultAsync(); 
-            if (patient == null)
-            {
-                return null; // Return null if the patient is not found
-            }
 
-            patient.MedicalRecord.IsChemistry = true;
-
-            //_context.MedicalRecords.Update()
-
-            await _context.SaveChangesAsync();
-
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
-            {
-                return null; // Return null if the requestedBy employee is not found
-            }
-
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
-            {
-                return null; // Return null if the reportedBy employee is not found
-            }
-
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
-            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
-            labreq.isChemistry = true;
-
-            labreqlist.Status = "Complete";
-
-            _context.LaboratoryRequestLists.Update(labreqlist);
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
             if (labreq == null)
             {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Chemistry = chemistry // Assign Hematology to the new lab request
-                };
-
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
+                throw new Exception("Lab request not found");
             }
-            else
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
+
+            if (medicalRecord == null)
             {
-                // Update the existing lab request
-                labreq.Chemistry = chemistry;
-                labreq.Patient = patient;
-
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
+                throw new Exception("Medical record not found!");
             }
+            medicalRecord.IsChemistry = true;
+
+            var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            if (labreqlist == null)
+            {
+                throw new Exception("Lab request list not found!");
+            }
+
+            labreqlist.Status = "Complete";
+            labreq.Chemistry = chemistry;
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
+
+
+
+
+            _context.LaboratoryRequests.Update(labreq);
+            _context.MedicalRecords.Update(medicalRecord);
+            _context.LaboratoryRequestLists.Update(labreqlist);
+
+
 
             await _context.SaveChangesAsync();
 
@@ -509,6 +456,17 @@ namespace DentalClinic.Services.LaboratoryService
 
         public async Task<Bacterology> AddBacterology(AddBacterologyDTO DTO)
         {
+            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
+            if (requestedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
+
+            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
+            if (reportedBy == null)
+            {
+                throw new Exception("Employee not found"); // Return null if the requestedBy employee is not found
+            }
             var bact = new Bacterology
             {
                 
@@ -525,65 +483,38 @@ namespace DentalClinic.Services.LaboratoryService
                 }
                 
             };
-            Patient? patient = await _context.Patients
-                .Where(p => p.PatientId == DTO.PatientId)
-                .Include(p => p.MedicalRecord).FirstOrDefaultAsync();
-            if (patient == null)
+
+            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            var medicalRecord = await _context.MedicalRecords.FirstOrDefaultAsync(mr => mr.Medical_RecordID == labreq.MedicalRecordId);
+
+
+            if (medicalRecord != null)
             {
-                return null; // Return null if the patient is not found
+                medicalRecord.IsBacterology = true;
             }
-
-            patient.MedicalRecord.IsBacterology = true;
-
             //_context.MedicalRecords.Update()
+
+            
 
             await _context.SaveChangesAsync();
 
-            Employee? requestedBy = await _context.Employees.FindAsync(DTO.RequestedById);
-            if (requestedBy == null)
-            {
-                return null; // Return null if the requestedBy employee is not found
-            }
 
-            Employee? reportedBy = await _context.Employees.FindAsync(DTO.ReportedById); // Correct ID check for ReportedById
-            if (reportedBy == null)
-            {
-                return null; // Return null if the reportedBy employee is not found
-            }
 
-            // Retrieve the existing LaboratoryRequest for the patient
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(x => x.PatientId == DTO.PatientId);
             var labreqlist = await _context.LaboratoryRequestLists.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
-            labreq.isBacterology = true;
 
             labreqlist.Status = "Complete";
 
+
+            labreq.Bacterology = bact;
+
+            labreq.ReportedById = DTO.ReportedById;
+            labreq.ReportedBy = reportedBy;
+            labreq.RequestedBy = requestedBy;
+            labreq.RequestedById = DTO.RequestedById;
+
             _context.LaboratoryRequestLists.Update(labreqlist);
-            if (labreq == null)
-            {
-                // If no existing laboratory request exists, create a new one
-                labreq = new LaboratoryRequests
-                {
-                    PatientId = DTO.PatientId,
-                    Bacterology = bact // Assign Hematology to the new lab request
-                };
-
-                _context.LaboratoryRequests.Add(labreq); // Add the new lab request to the context
-            }
-            else
-            {
-                // Update the existing lab request
-                labreq.Bacterology = bact;
-                labreq.PatientId = DTO.PatientId;
-                labreq.Patient = patient;
-                labreq.ReportedById = DTO.ReportedById;
-                labreq.ReportedBy = reportedBy;
-                labreq.RequestedBy = requestedBy;
-                labreq.RequestedById = DTO.RequestedById;
-
-                _context.LaboratoryRequests.Update(labreq); // Update the existing lab request in the context
-            }
-
+            _context.LaboratoryRequests.Update(labreq);
+            _context.MedicalRecords.Update(medicalRecord);
             await _context.SaveChangesAsync();
 
             return bact;

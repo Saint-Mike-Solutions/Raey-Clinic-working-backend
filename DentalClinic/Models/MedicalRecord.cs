@@ -8,40 +8,37 @@ namespace DentalClinic.Models
         [Key]
         public int Medical_RecordID { get; set; }
 
-        [ForeignKey("Patient")]
+        // Foreign key reference to Patient
         public int PatientId { get; set; }
-
-        public DateTime? Date { get; set; } = DateTime.Now;
-
-        //public string LabTests { get; set; } = string.Empty;
-
-        public string PrescribedMedicinesandNotes { get; set; } = string.Empty;
+        [ForeignKey("PatientId")]
         [System.Text.Json.Serialization.JsonIgnore]
         public Patient? Patient { get; set; }
-        //[System.Text.Json.Serialization.JsonIgnore]
-        public string ReferalList { get; set; } = string.Empty;
-        //[System.Text.Json.Serialization.JsonIgnore]
 
+        public DateTime Date { get; set; } = DateTime.Now;
+
+        public string PrescribedMedicinesandNotes { get; set; } = string.Empty;
+        public string ReferalList { get; set; } = string.Empty;
+
+        // One-to-Many Relationship with Procedure
         public List<Procedure>? Procedures { get; set; }
 
-        [ForeignKey("TreatedBy")]
+        // Foreign key for the employee who treated the patient
         public int? TreatedById { get; set; }
+        [ForeignKey("TreatedById")]
         [System.Text.Json.Serialization.JsonIgnore]
-
         public Employee? TreatedBy { get; set; }
-        
+
         public int DiscountPercent { get; set; }
         public decimal TotalAmount { get; set; }
-        public bool IsPaid { get; set; } = false; 
+        public bool IsPaid { get; set; } = false;
 
-        public string ProcedureIDs { set; get; } = string.Empty;
-
+        public string ProcedureIDs { get; set; } = string.Empty;
         public string Quantities { get; set; } = string.Empty;
 
         public decimal SubTotalAmount { get; set; }
-
         public bool IsCard { get; set; } = false;
 
+        // Lab tests
         public bool IsHematology { get; set; }
         public bool IsSerology { get; set; }
         public bool IsStoolExamination { get; set; }
@@ -51,12 +48,14 @@ namespace DentalClinic.Models
         public bool IsUrinalysis { get; set; }
 
         public bool HasConsultationFee { get; set; }
-
         public decimal? ConsultationPrice { get; set; }
 
-        public static implicit operator List<object>(MedicalRecord v)
-        {
-            throw new NotImplementedException();
-        }
+        public LaboratoryRequests? LaboratoryRequest { get; set; }
+
+        public Payment? Payment { get; set; }
+        
+        public LaboratoryRequestList? LaboratoryRequestsList { get; set; }
+
+
     }
 }

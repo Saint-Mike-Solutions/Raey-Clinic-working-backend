@@ -45,10 +45,11 @@ namespace DentalClinic.DTOs.PatientDTO
 
         public bool isPaid { get; set; }
 
-        public List<Referral> referals { get; set; }
+        public List<Referral>? referals { get; set; }
 
-        public List<Prescription> prescriptions { get; set; }
+        public List<Prescription>? prescriptions { get; set; }
 
-        public LaboratoryRequests? laboratoryRequests { get; set; }
+        public List<MedicalRecord>? MedicalRecords { get; set; }
+
     }
 }

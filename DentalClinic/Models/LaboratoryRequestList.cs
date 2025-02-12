@@ -30,9 +30,11 @@ namespace DentalClinic.Models
             
         public string? Status { get; set; } = "Pending";
 
-        //public LaboratoryRequests? labratoryRequest { get; set; }
+        public int SatusCounter { get; set; } = 0;
 
-        //public int laboratoryrequestId { get; set; }
+        public int? MedicalRecoredId { get; set; }
+
+        public MedicalRecord? MedicalRecord { get; set; }
         
         public DateTime DateTime { get; set; } = DateTime.Now;
     }

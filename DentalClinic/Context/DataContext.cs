@@ -148,9 +148,9 @@ namespace DentalClinic.Context
 
 
             modelBuilder.Entity<MedicalRecord>()
-                .HasOne(mr => mr.Patient)
-                .WithOne(p => p.MedicalRecord) // Change WithMany to WithOne
-                .HasForeignKey<MedicalRecord>(mr => mr.PatientId) // Specify the foreign key
+                .HasOne(m => m.Patient)
+                .WithMany(p => p.MedicalRecords)
+                .HasForeignKey(m => m.PatientId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 

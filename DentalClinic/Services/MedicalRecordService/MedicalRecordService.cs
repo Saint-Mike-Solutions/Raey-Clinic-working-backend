@@ -24,23 +24,8 @@ namespace DentalClinic.Services.MedicalRecordService
         public async Task<MedicalRecord> AddMedicalRecord(AddMedicalRecordDTO recordDTO)
         {
 
-            var record = await _context.MedicalRecords.FirstOrDefaultAsync(p => p.Medical_RecordID == recordDTO.PatientId);
-
-            if (record  != null)
-            {
-                record.TreatedById = recordDTO.TreatedByID;
-                record.PrescribedMedicinesandNotes = recordDTO.PrescribedMedicinesandNotes;
-                record.ReferalList = recordDTO.ReferalList;
-                record.DiscountPercent = recordDTO.DiscountPercent;
-            }
-            else
-            {
-                return null;
-            }
-            //var record = _mapper.Map<MedicalRecord>(recordDTO);
+            var record = new MedicalRecord();
             var patient = await _context.Patients.Where(p => p.PatientId == recordDTO.PatientId).FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Patient Not Found");
-            patient.UpdatedAt = DateTime.Now;
-            _context.Patients.Update(patient);
             int cardExpireAfter = 14;
             decimal totalPrice = 0;
             List<Procedure> proceduresList = new List<Procedure>();
@@ -51,9 +36,6 @@ namespace DentalClinic.Services.MedicalRecordService
                 throw new InvalidOperationException("Company Setting Not Found");
             cardExpireAfter = companySettings.CardExpireAfter;
             
-            record.Patient = await _context.Patients
-                        .Where(pa => pa.PatientId == recordDTO.PatientId)
-                        .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Patient Not Found!!!");
             var TreatmentBY = await _context.Employees
                         .Where(e => e.EmployeeId == recordDTO.TreatedByID)
                         .FirstOrDefaultAsync()?? throw new KeyNotFoundException("Employee Not Found!!!");
@@ -62,64 +44,18 @@ namespace DentalClinic.Services.MedicalRecordService
                         .FirstOrDefaultAsync();
 
 
-            // LabServices
-            var labServices = await _context.LaboratoryRequests.FirstOrDefaultAsync(u => u.PatientId == recordDTO.PatientId);
-            if (labServices.isPaid == false)
-            {
-                labServices.isPaid = true;
-                
-            }
+            //var labServices = new LaboratoryRequests();
+            //var payments = new Payment();
 
 
+            record.TreatedById = recordDTO.TreatedByID;
+            record.PrescribedMedicinesandNotes = recordDTO.PrescribedMedicinesandNotes;
+            record.ReferalList = recordDTO.ReferalList;
+            record.DiscountPercent = recordDTO.DiscountPercent;
 
-            //if (patientCard == null)
-            //{
-            //    var pc = new PatientCard
-            //    {
-            //        PatientID = record.Patient.PatientId,
-            //        CreatedAT = DateTime.Now,
-            //    };
-            //    await _context.PatientCards.AddAsync(pc);
-            //    Procedure cardProcedure = await _context.Procedures
-            //            .Where(pr => pr.ProcedureName == "card" || pr.ProcedureName == "CARD" || pr.ProcedureName == "Card")  // Replace with actual ID
-            //            .FirstOrDefaultAsync()??throw new KeyNotFoundException("card Procedure must be added to Treatments!!!");
-
-            //    if (cardProcedure != null)
-            //    {
-            //        record.IsCard = true;
-            //        proceduresList.Add(cardProcedure);
-            //        totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
-            //    }
-            //}
-            //else if (patientCard != null && patientCard.CreatedAT < DateTime.Now.AddDays(-cardExpireAfter))
-            //{
-
-            //    patientCard.CreatedAT = DateTime.Now;
-            //    _context.PatientCards.Update(patientCard);
-            //    Procedure cardProcedure = await _context.Procedures
-            //           .Where(pr => pr.ProcedureName == "card")  // Replace with actual ID
-            //           .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("card Procedure not found!!!");
-            //    if (cardProcedure != null)
-            //    {
-            //        record.IsCard = true;
-            //        proceduresList.Add(cardProcedure);
-            //        totalPrice += cardProcedure.Price.Value; // Assuming Price is a decimal property
-            //    }
-
-            //}
-
-
-            var payments = await _context.Payments.Where(p => p.PatientID == recordDTO.PatientId)
-                                .OrderByDescending(p => p.PaymentDate)
-                                .FirstOrDefaultAsync();
-            if (payments == null || payments.PaymentDate < DateTime.Now.AddDays(-cardExpireAfter))
-            {
-                record.IsCard = true;
-            }
             record.TreatedBy = TreatmentBY;
-            //string[] separatedStrings = _toolsService.ReturnArrayofCommaSeparatedStrings(recordDTO.ReferalsList);
-
-            //List<Referal> referalList = new List<Referal>();
+            //record.Payment = payments;
+            record.Patient = patient;
 
 
 
@@ -171,7 +107,58 @@ namespace DentalClinic.Services.MedicalRecordService
             record.ConsultationPrice = recordDTO.ConsultationPrice;
             record.HasConsultationFee = recordDTO.HasConsultationFee;
 
-            _context.MedicalRecords.Update(record);
+            //record.IsBacterology = recordDTO.Bacterology;
+            //record.IsHematology = recordDTO.Hematology;
+            //record.IsSerology = recordDTO.Serology;
+            //record.IsMicroscopy = recordDTO.Microscopy;
+            //record.IsStoolExamination = recordDTO.StoolExamination;
+            //record.IsChemistry  = recordDTO.Chemistry;
+            //record.IsUrinalysis = recordDTO.Urinalysis;
+
+
+            await _context.MedicalRecords.AddAsync(record);
+            await _context.SaveChangesAsync();
+
+            var labreq = new LaboratoryRequests();
+            labreq.isBacterology = recordDTO.Bacterology;
+            labreq.isChemistry = recordDTO.Chemistry;
+            labreq.isHematology = recordDTO.Hematology;
+            labreq.isSerology = recordDTO.Serology;
+            labreq.isMicroscopy = recordDTO.Microscopy;
+            labreq.isStoolExamination = recordDTO.StoolExamination;
+            labreq.isUrinalyis = recordDTO.Urinalysis;
+            labreq.PatientId = recordDTO.PatientId;
+            labreq.Patient = patient;
+            labreq.RequestedBy = TreatmentBY;
+            labreq.RequestedById = recordDTO.TreatedByID;
+            labreq.MedicalRecord = record;
+            labreq.MedicalRecordId = record.Medical_RecordID;
+
+
+
+            var labreqlist = new LaboratoryRequestList();
+            labreqlist.Bacterology = recordDTO.Bacterology;
+            labreqlist.Hematology = recordDTO.Hematology;
+            labreqlist.Serology = recordDTO.Serology;
+            labreqlist.Microscopy = recordDTO.Microscopy;
+            labreqlist.StoolExamination = recordDTO.StoolExamination;
+            labreqlist.Chemistry = recordDTO.Chemistry;
+            labreqlist.Urinalysis = recordDTO.Urinalysis;
+            labreqlist.PatientId = recordDTO.PatientId;
+            labreqlist.EmployeeId = recordDTO.TreatedByID;
+            labreqlist.MedicalRecord = record;
+            labreqlist.MedicalRecoredId = record.Medical_RecordID;
+            labreqlist.Patient = patient;
+            labreqlist.Requester = TreatmentBY;
+
+            await _context.LaboratoryRequestLists.AddAsync(labreqlist);
+            await _context.LaboratoryRequests.AddAsync(labreq);
+
+            
+
+            record.LaboratoryRequestsList = labreqlist;
+            record.LaboratoryRequest = labreq;
+
             await _context.SaveChangesAsync();
             return record;
         }
@@ -207,7 +194,7 @@ namespace DentalClinic.Services.MedicalRecordService
                 ReferalsList = r.ReferalList,
                 DiscountPercent = r.DiscountPercent,
                 TotalAmount = r.TotalAmount,
-                date = r.Date ?? DateTime.MinValue,
+                //date = r.Date ?? DateTime.MinValue,
                 SubTotalAmount = r.SubTotalAmount,
 
                 ProceduresIDs = string.IsNullOrEmpty(r.ProcedureIDs)
@@ -282,7 +269,7 @@ namespace DentalClinic.Services.MedicalRecordService
                     ReferalsList = record.ReferalList,
                     DiscountPercent = record.DiscountPercent,
                     TotalAmount = record.TotalAmount,
-                    date = record.Date ?? DateTime.MinValue,
+                    //date = record.Date ?? DateTime.MinValue,
                     SubTotalAmount = record.SubTotalAmount,
                     ProceduresIDs = string.IsNullOrEmpty(record.ProcedureIDs)
                         ? new int[] { 0 }

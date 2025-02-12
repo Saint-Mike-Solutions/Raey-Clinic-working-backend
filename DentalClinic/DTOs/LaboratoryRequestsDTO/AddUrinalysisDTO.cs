@@ -31,5 +31,7 @@
 
         public int LabReqListId { get; set; }
 
+        public int MedicalRecordId { get; set; }
+
     }
 }

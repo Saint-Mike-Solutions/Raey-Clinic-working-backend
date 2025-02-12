@@ -42,7 +42,7 @@ namespace DentalClinic.Models
         public DateTime? UpdatedAt { get; set; }
         public List<HealthProgress>? HealthProgresses { get; set; }
 
-        public MedicalRecord MedicalRecord { get; set; }
+        public List<MedicalRecord>? MedicalRecords { get; set; }
 
         public PatientProfile? Profile { get; set; }
 
@@ -68,11 +68,8 @@ namespace DentalClinic.Models
 
         //[System.Text.Jso n.Serialization.JsonIgnore]
 
-        public LaboratoryRequests? LaboratoryRequests { get; set; }
-        public Payment? Payment { get; set; }
 
 
-        public List<LaboratoryRequestList>? LaboratoryRequestsList { get; set; }
 
 
     }

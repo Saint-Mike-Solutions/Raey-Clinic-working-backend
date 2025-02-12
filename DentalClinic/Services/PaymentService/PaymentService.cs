@@ -315,7 +315,7 @@ namespace DentalClinic.Services.PaymentService
                 MedicalRecordID = record.Medical_RecordID,
                 Discount = record.DiscountPercent,
                 IssuedBy = record.TreatedById ?? 0, // Default to 0 if null
-                MedicalRecordDate = record.Date ?? DateTime.MinValue, // Default to MinValue if null
+                //MedicalRecordDate = record.Date ?? DateTime.MinValue, // Default to MinValue if null
                 SubTotal = record.SubTotalAmount,
                 Total = record.TotalAmount,
                 ProcedureIDs = proceduresArray,

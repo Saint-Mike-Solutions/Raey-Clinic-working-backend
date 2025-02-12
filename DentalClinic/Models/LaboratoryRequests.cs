@@ -57,5 +57,7 @@ namespace DentalClinic.Models
         {
             throw new NotImplementedException();
         }
+        public int? MedicalRecordId { get; set; }
+        public MedicalRecord? MedicalRecord { get; set; }
     }
 }

@@ -37,57 +37,15 @@ namespace DentalClinic.Services.PatientService
                 patient.DateOfBirth = _toolsService.CalculateDOB(patient.Age);
             }
 
-            var lab = new LaboratoryRequests
-            {
-                ReportedBy = null,
-                RequestedBy = null,
-                Bacterology = null,
-                Chemistry = null,
-                Microscopy = null,
-                Hematology = null,
-                Serology = null,
-                Urinalysis = null,
-                StoolExamination = null,
-
-            };
-
-            var medicalRecord = new MedicalRecord
-            {
-                PatientId = 0, // Set to 0; will be updated once the patient is saved
-                Date = null,
-                PrescribedMedicinesandNotes = string.Empty,
-                ReferalList = string.Empty,
-                Procedures = null,
-                TreatedById = null,
-                DiscountPercent = 0,
-                TotalAmount = 0,
-                IsPaid = false,
-                ProcedureIDs = string.Empty,
-                Quantities = string.Empty,
-                SubTotalAmount = 0,
-                IsCard = false,
-                IsHematology = false,
-                IsSerology = false,
-                IsStoolExamination = false,
-                IsMicroscopy = false,
-                IsChemistry = false,
-                IsBacterology = false,
-                IsUrinalysis = false,
-            };
-
-            patient.LaboratoryRequests = lab;
-            patient.MedicalRecord = medicalRecord;
 
             var patientProfile = _mapper.Map<PatientProfile>(patientDTO);
             patient.Profile = patientProfile;
 
-            _context.Patients.Add(patient);
+            await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
 
-            // Update the MedicalRecord's PatientId after the Patient is saved
-            medicalRecord.PatientId = patient.PatientId;
-                //= patient.Id;
-            await _context.SaveChangesAsync();
+ 
+            //await _context.SaveChangesAsync();
 
             return patient;
         }
@@ -98,21 +56,12 @@ namespace DentalClinic.Services.PatientService
                                                  .Include(p=>p.HealthProgresses)
                                                  .Include(p=>p.Appointments)
                                                  .Include(p => p.Profile)
-                                                 .Include(p=>p.MedicalRecord)
+                                                 .Include(p=>p.MedicalRecords)
+                                                 .Include(p=> p.Referrals)
+                                                 .Include(p => p.Prescriptions)
                                                  .Include(p=> p.Credits)
                                                 .FirstOrDefaultAsync();
-            //if (patient != null)
-            //{
-            //    // Step 2: Delete associated referrals
-            //    if(patient.MedicalRecords != null) 
-            //    {
-            //        //var referralIds =  patient.MedicalRecords.SelectMany(mr => mr.Referals.Select(r => r.ReferalID)).ToList();
-            //        //var referrals =  _context.Referals.Where(r => referralIds.Contains(r.ReferalID));
-            //        //_context.Referals.RemoveRange(referrals);
-            //        _context.MedicalRecords.RemoveRange(patient.MedicalRecords);
-            //    }
 
-            //}
 
             if (patient == null) throw new KeyNotFoundException("Patient Not Found");
             _context.Patients.Remove(patient);
@@ -150,24 +99,9 @@ namespace DentalClinic.Services.PatientService
             var patients = await _context.Patients
                 .OrderByDescending(c => c.UpdatedAt)
                 .Include(p => p.PatientCard)
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Hematology)  
-                        .ThenInclude(hm => hm.Diff)// Include Hematology
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Urinalysis)       // Include Urinalysis
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Serology)         // Include Serology
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.StoolExamination) // Include StoolExamination
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Microscopy)       // Include Microscopy
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Chemistry)        // Include Chemistry
-                .Include(p => p.LaboratoryRequests)
-                    .ThenInclude(lr => lr.Bacterology)  
-                        .ThenInclude(br => br.AFB) // Include Bacterology
                 .Include(p => p.Prescriptions)              // Include Prescriptions
-                .Include(p => p.Referrals)                  // Include Referrals
+                .Include(p => p.Referrals)   
+                .Include(p => p.MedicalRecords)// Include Referrals
                 .ToListAsync();
             var compSettings = await _context.CompanySettings.FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Company Settings Not Found!");
             var cardExpireAfter = compSettings.CardExpireAfter;
@@ -194,10 +128,8 @@ namespace DentalClinic.Services.PatientService
                 Kebele = patient.Kebele,
                 HouseNumber = patient.HouseNumber,
                 DateOfBirth = patient.DateOfBirth ?? DateTime.MinValue,
-                laboratoryRequests = patient.LaboratoryRequests,
                 prescriptions = patient.Prescriptions,
                 referals = patient.Referrals,
-                isPaid = patient.Payment?.IsPaid ?? false // If Payment is null, default to false
             }).ToList();
 
             return patientDTOs;
@@ -211,24 +143,10 @@ namespace DentalClinic.Services.PatientService
                                                  Where(pp => pp.PatientId == ID)
                                                     .OrderByDescending(c => c.UpdatedAt)
                                                     .Include(p => p.PatientCard)
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Hematology)
-                                                            .ThenInclude(hm => hm.Diff)// Include Hematology
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Urinalysis)       // Include Urinalysis
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Serology)         // Include Serology
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.StoolExamination) // Include StoolExamination
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Microscopy)       // Include Microscopy
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Chemistry)        // Include Chemistry
-                                                    .Include(p => p.LaboratoryRequests)
-                                                        .ThenInclude(lr => lr.Bacterology)
-                                                            .ThenInclude(br => br.AFB) // Include Bacterology
+ // Include Bacterology
                                                     .Include(p => p.Prescriptions)              // Include Prescriptions
                                                     .Include(p => p.Referrals)
+                                                    .Include(p => p.MedicalRecords)
                                                     .FirstOrDefaultAsync();
             var patientCard = await _context.PatientCards.Where(p => p.PatientID == ID).FirstOrDefaultAsync();
             var boolcheck = false;
@@ -273,7 +191,9 @@ namespace DentalClinic.Services.PatientService
                 Kebele = patients.Kebele,
                 HouseNumber = patients.HouseNumber,
                 DateOfBirth = patients.DateOfBirth ?? DateTime.MinValue,
-                laboratoryRequests = patients.LaboratoryRequests,
+                MedicalRecords = patients?.MedicalRecords,
+                prescriptions = patients?.Prescriptions,
+                referals = patients?.Referrals,
 
             };
             
