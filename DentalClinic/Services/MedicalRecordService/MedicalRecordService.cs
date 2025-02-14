@@ -35,10 +35,10 @@ namespace DentalClinic.Services.MedicalRecordService
             if (companySettings == null)
                 throw new InvalidOperationException("Company Setting Not Found");
             cardExpireAfter = companySettings.CardExpireAfter;
-            
+
             var TreatmentBY = await _context.Employees
                         .Where(e => e.EmployeeId == recordDTO.TreatedByID)
-                        .FirstOrDefaultAsync()?? throw new KeyNotFoundException("Employee Not Found!!!");
+                        .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Employee Not Found!!!");
             PatientCard? patientCard = await _context.PatientCards
                         .Where(e => e.PatientID == recordDTO.PatientId)
                         .FirstOrDefaultAsync();
@@ -76,7 +76,7 @@ namespace DentalClinic.Services.MedicalRecordService
                 int procedureId = Procedures[i];
                 int quantity = recordDTO.Quantity[i];
                 Procedure? procedureItem = new Procedure();
-                
+
                 procedureItem = await _context.Procedures
                                                        .Where(pr => pr.ProcedureID == procedureId)
                                                        .FirstOrDefaultAsync();
@@ -86,7 +86,7 @@ namespace DentalClinic.Services.MedicalRecordService
                     proceduresList.Add(procedureItem);
 
                     // Multiply the price with the quantity
-                   totalPrice = totalPrice + (decimal)(procedureItem.Price );
+                    totalPrice = totalPrice + (decimal)(procedureItem.Price);
 
                     // Do something with totalPrice if needed.
                 }
@@ -98,11 +98,11 @@ namespace DentalClinic.Services.MedicalRecordService
             }
             else
             {
-                 totalPrice = totalPrice;
+                totalPrice = totalPrice;
             }
             record.DiscountPercent = recordDTO.DiscountPercent;
             record.Procedures = proceduresList;
-            record.TotalAmount = totalPrice ; 
+            record.TotalAmount = totalPrice;
 
             record.ConsultationPrice = recordDTO.ConsultationPrice;
             record.HasConsultationFee = recordDTO.HasConsultationFee;
@@ -131,35 +131,60 @@ namespace DentalClinic.Services.MedicalRecordService
             labreq.Patient = patient;
             labreq.RequestedBy = TreatmentBY;
             labreq.RequestedById = recordDTO.TreatedByID;
-            labreq.MedicalRecord = record;
             labreq.MedicalRecordId = record.Medical_RecordID;
+            labreq.MedicalRecord = record;
 
 
 
-            var labreqlist = new LaboratoryRequestList();
-            labreqlist.Bacterology = recordDTO.Bacterology;
-            labreqlist.Hematology = recordDTO.Hematology;
-            labreqlist.Serology = recordDTO.Serology;
-            labreqlist.Microscopy = recordDTO.Microscopy;
-            labreqlist.StoolExamination = recordDTO.StoolExamination;
-            labreqlist.Chemistry = recordDTO.Chemistry;
-            labreqlist.Urinalysis = recordDTO.Urinalysis;
-            labreqlist.PatientId = recordDTO.PatientId;
-            labreqlist.EmployeeId = recordDTO.TreatedByID;
-            labreqlist.MedicalRecord = record;
-            labreqlist.MedicalRecoredId = record.Medical_RecordID;
-            labreqlist.Patient = patient;
-            labreqlist.Requester = TreatmentBY;
+            //var labreqlist = new LaboratoryRequestList();
+            //labreqlist.Bacterology = recordDTO.Bacterology;
+            //labreqlist.Hematology = recordDTO.Hematology;
+            //labreqlist.Serology = recordDTO.Serology;
+            //labreqlist.Microscopy = recordDTO.Microscopy;
+            //labreqlist.StoolExamination = recordDTO.StoolExamination;
+            //labreqlist.Chemistry = recordDTO.Chemistry;
+            //labreqlist.Urinalysis = recordDTO.Urinalysis;
+            //labreqlist.PatientId = recordDTO.PatientId;
+            //labreqlist.EmployeeId = recordDTO.TreatedByID;
+            //labreqlist.MedicalRecoredId = record.Medical_RecordID;
+            //labreqlist.MedicalRecord = record;
+            //labreqlist.Patient = patient;
+            //labreqlist.Requester = TreatmentBY;
 
-            await _context.LaboratoryRequestLists.AddAsync(labreqlist);
-            await _context.LaboratoryRequests.AddAsync(labreq);
+            //try
+            //{
 
-            
+            //await _context.LaboratoryRequestLists.AddAsync(labreqlist);
+            //}
+            //catch (Exception ex)
+            //{
+            //    // Log the exception or inspect it in your debugger
+            //    Console.WriteLine($"Error: {ex.Message}");
+            //    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+            //    Console.WriteLine("hereee");
+            //    throw new Exception("hereeeeee2"); // Re-throw the exception if you want it to propagate
+            //}
 
-            record.LaboratoryRequestsList = labreqlist;
-            record.LaboratoryRequest = labreq;
 
-            await _context.SaveChangesAsync();
+            try
+            {
+
+                await _context.LaboratoryRequests.AddAsync(labreq);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or inspect it in your debugger
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                throw new Exception("hereeeeee"); // Re-throw the exception if you want it to propagate
+            }
+
+
+
+            //record.LaboratoryRequestsList = labreqlist;
+            //record.LaboratoryRequest = labreq;
+
+            //await _context.SaveChangesAsync();
             return record;
         }
 
@@ -168,10 +193,10 @@ namespace DentalClinic.Services.MedicalRecordService
         public async Task<MedicalRecord> DeleteMedicalRecord(int MedicalRecordID)
         {
             var MedicalRecord = await _context.MedicalRecords.
-                                 Where(mr=> mr.Medical_RecordID == MedicalRecordID)       
-                                .FirstOrDefaultAsync()?? throw new KeyNotFoundException("Medical Record Not Found!");
+                                 Where(mr => mr.Medical_RecordID == MedicalRecordID)
+                                .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("Medical Record Not Found!");
             _context.MedicalRecords.Remove(MedicalRecord);
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return MedicalRecord;
         }
 
@@ -201,7 +226,7 @@ namespace DentalClinic.Services.MedicalRecordService
                     ? new int[] { 0 }
                     : JsonSerializer.Deserialize<int[]>(r.ProcedureIDs),
 
-                                Quantity = string.IsNullOrEmpty(r.Quantities)
+                Quantity = string.IsNullOrEmpty(r.Quantities)
                     ? new int[] { 0 }
                     : JsonSerializer.Deserialize<int[]>(r.Quantities),
 
@@ -233,7 +258,7 @@ namespace DentalClinic.Services.MedicalRecordService
                      .Include(r => r.Procedures)
                      .Include(r => r.TreatedBy)
                      .FirstOrDefaultAsync();
-            var procedures = string.IsNullOrEmpty(records.ProcedureIDs)? new int[] { 0 }: JsonSerializer.Deserialize<int[]>(records.ProcedureIDs);
+            var procedures = string.IsNullOrEmpty(records.ProcedureIDs) ? new int[] { 0 } : JsonSerializer.Deserialize<int[]>(records.ProcedureIDs);
             var quantities = string.IsNullOrEmpty(records.Quantities) ? new int[] { 0 } : JsonSerializer.Deserialize<int[]>(records.Quantities);
 
             var mergedProcedures = procedures.Concat(MrDto.ProceduresNew).ToArray();
@@ -246,20 +271,20 @@ namespace DentalClinic.Services.MedicalRecordService
             return records;
         }
 
-        public async Task<DisplayMedicalRecordDTO> GetMedicalRecordById(int id)
+        public async Task<List<DisplayMedicalRecordDTO>> GetAllMedicalRecordsByPatientId(int id)
         {
-            // Retrieve the single medical record
-            var record = await _context.MedicalRecords
-                                .Where(pp => pp.PatientId == id)
-                                .Include(r => r.Procedures)
-                                .Include(r => r.TreatedBy)
-                                .OrderByDescending(r => r.Date) // Order by date, if applicable
-                                .FirstOrDefaultAsync();
+            // Retrieve all medical records for the given patient
+            var records = await _context.MedicalRecords
+                                 .Where(pp => pp.PatientId == id)
+                                 .Include(r => r.Procedures)
+                                 .Include(r => r.TreatedBy)
+                                 .OrderByDescending(r => r.Date) // Order by date, if applicable
+                                 .ToListAsync();
 
-            if (record != null)
+            if (records != null && records.Any())
             {
-                // Map the record to a DTO
-                var recordDTO = new DisplayMedicalRecordDTO
+                // Map each record to a DTO
+                var recordsDTO = records.Select(record => new DisplayMedicalRecordDTO
                 {
                     Medical_RecordID = record.Medical_RecordID,
                     PatientId = record.PatientId,
@@ -269,7 +294,6 @@ namespace DentalClinic.Services.MedicalRecordService
                     ReferalsList = record.ReferalList,
                     DiscountPercent = record.DiscountPercent,
                     TotalAmount = record.TotalAmount,
-                    //date = record.Date ?? DateTime.MinValue,
                     SubTotalAmount = record.SubTotalAmount,
                     ProceduresIDs = string.IsNullOrEmpty(record.ProcedureIDs)
                         ? new int[] { 0 }
@@ -288,9 +312,9 @@ namespace DentalClinic.Services.MedicalRecordService
                     IsSerology = record.IsSerology,
                     HasConsultationFee = record.HasConsultationFee,
                     ConsultationPrice = record.ConsultationPrice,
-                };
+                }).ToList();
 
-                return recordDTO;
+                return recordsDTO;
             }
             else
             {

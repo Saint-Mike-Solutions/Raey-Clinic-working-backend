@@ -20,6 +20,7 @@
 
         public int EmployeeId { get; set; }
 
+        public int medicalRecordId { get; set; }
         public string Status { get; set; } = "Pending";
     }
 }

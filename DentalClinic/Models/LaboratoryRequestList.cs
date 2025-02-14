@@ -6,10 +6,13 @@ namespace DentalClinic.Models
     {
         [Key]
         public int Id {  get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
 
         public Patient Patient { get; set; }
 
         public int PatientId { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+
         public Employee Requester { get; set; }
 
         public int EmployeeId { get; set; }
@@ -33,6 +36,7 @@ namespace DentalClinic.Models
         public int SatusCounter { get; set; } = 0;
 
         public int? MedicalRecoredId { get; set; }
+
 
         public MedicalRecord? MedicalRecord { get; set; }
         

@@ -41,8 +41,12 @@ namespace DentalClinic.Services.LaboratoryRequestListService
             //lab.labratoryRequest = labReq;
             //lab.laboratoryrequestId = id;
 
+            var medrec = await _context.MedicalRecords.Where(m=> m.Medical_RecordID == DTO.medicalRecordId).FirstOrDefaultAsync();
+
             lab.Requester = Requester;
             lab.Patient = patient;
+            lab.MedicalRecord = medrec;
+            lab.MedicalRecoredId = medrec.Medical_RecordID;
 
             await _context.LaboratoryRequestLists.AddAsync(lab);
             await _context.SaveChangesAsync();

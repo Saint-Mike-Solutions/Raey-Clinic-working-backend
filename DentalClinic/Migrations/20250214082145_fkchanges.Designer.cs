@@ -4,6 +4,7 @@ using DentalClinic.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DentalClinic.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250214082145_fkchanges")]
+    partial class fkchanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -662,9 +665,6 @@ namespace DentalClinic.Migrations
                     b.Property<bool>("Hematology")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("MedicalRecordMedical_RecordID")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MedicalRecoredId")
                         .HasColumnType("int");
 
@@ -694,12 +694,6 @@ namespace DentalClinic.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("EmployeeId1");
-
-                    b.HasIndex("MedicalRecordMedical_RecordID");
-
-                    b.HasIndex("MedicalRecoredId")
-                        .IsUnique()
-                        .HasFilter("[MedicalRecoredId] IS NOT NULL");
 
                     b.HasIndex("PatientId");
 
@@ -787,11 +781,9 @@ namespace DentalClinic.Migrations
 
                     b.HasIndex("HematologyId");
 
-                    b.HasIndex("MedicalRecordId")
+                    b.HasIndex("MedicalRecordMedical_RecordID")
                         .IsUnique()
-                        .HasFilter("[MedicalRecordId] IS NOT NULL");
-
-                    b.HasIndex("MedicalRecordMedical_RecordID");
+                        .HasFilter("[MedicalRecordMedical_RecordID] IS NOT NULL");
 
                     b.HasIndex("PatientId");
 
@@ -849,10 +841,7 @@ namespace DentalClinic.Migrations
             modelBuilder.Entity("DentalClinic.Models.MedicalRecord", b =>
                 {
                     b.Property<int>("Medical_RecordID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Medical_RecordID"));
 
                     b.Property<decimal?>("ConsultationPrice")
                         .HasColumnType("decimal(18,2)");
@@ -893,6 +882,9 @@ namespace DentalClinic.Migrations
                     b.Property<bool>("IsUrinalysis")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LaboratoryRequestsListId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -922,6 +914,8 @@ namespace DentalClinic.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Medical_RecordID");
+
+                    b.HasIndex("LaboratoryRequestsListId");
 
                     b.HasIndex("PatientId");
 
@@ -1825,22 +1819,11 @@ namespace DentalClinic.Migrations
                         .WithMany("ListOfLaboratoryRequests")
                         .HasForeignKey("EmployeeId1");
 
-                    b.HasOne("DentalClinic.Models.MedicalRecord", "MedicalRecord")
-                        .WithMany()
-                        .HasForeignKey("MedicalRecordMedical_RecordID");
-
-                    b.HasOne("DentalClinic.Models.MedicalRecord", null)
-                        .WithOne("LaboratoryRequestsList")
-                        .HasForeignKey("DentalClinic.Models.LaboratoryRequestList", "MedicalRecoredId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("DentalClinic.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("MedicalRecord");
 
                     b.Navigation("Patient");
 
@@ -1867,12 +1850,7 @@ namespace DentalClinic.Migrations
 
                     b.HasOne("DentalClinic.Models.MedicalRecord", null)
                         .WithOne("LaboratoryRequest")
-                        .HasForeignKey("DentalClinic.Models.LaboratoryRequests", "MedicalRecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DentalClinic.Models.MedicalRecord", "MedicalRecord")
-                        .WithMany()
-                        .HasForeignKey("MedicalRecordMedical_RecordID");
+                        .HasForeignKey("DentalClinic.Models.LaboratoryRequests", "MedicalRecordMedical_RecordID");
 
                     b.HasOne("DentalClinic.Models.Patient", "Patient")
                         .WithMany()
@@ -1905,8 +1883,6 @@ namespace DentalClinic.Migrations
                     b.Navigation("Chemistry");
 
                     b.Navigation("Hematology");
-
-                    b.Navigation("MedicalRecord");
 
                     b.Navigation("Patient");
 
@@ -1941,6 +1917,22 @@ namespace DentalClinic.Migrations
 
             modelBuilder.Entity("DentalClinic.Models.MedicalRecord", b =>
                 {
+                    b.HasOne("DentalClinic.Models.LaboratoryRequestList", "LaboratoryRequestsList")
+                        .WithMany()
+                        .HasForeignKey("LaboratoryRequestsListId");
+
+                    b.HasOne("DentalClinic.Models.LaboratoryRequestList", null)
+                        .WithOne("MedicalRecord")
+                        .HasForeignKey("DentalClinic.Models.MedicalRecord", "Medical_RecordID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DentalClinic.Models.LaboratoryRequests", null)
+                        .WithOne("MedicalRecord")
+                        .HasForeignKey("DentalClinic.Models.MedicalRecord", "Medical_RecordID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("DentalClinic.Models.Patient", "Patient")
                         .WithMany("MedicalRecords")
                         .HasForeignKey("PatientId")
@@ -1951,6 +1943,8 @@ namespace DentalClinic.Migrations
                         .WithMany("MedicalRecordAdministered")
                         .HasForeignKey("TreatedById")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("LaboratoryRequestsList");
 
                     b.Navigation("Patient");
 
@@ -2161,16 +2155,21 @@ namespace DentalClinic.Migrations
                     b.Navigation("UserAccount");
                 });
 
+            modelBuilder.Entity("DentalClinic.Models.LaboratoryRequestList", b =>
+                {
+                    b.Navigation("MedicalRecord");
+                });
+
             modelBuilder.Entity("DentalClinic.Models.LaboratoryRequests", b =>
                 {
+                    b.Navigation("MedicalRecord");
+
                     b.Navigation("Microscopy");
                 });
 
             modelBuilder.Entity("DentalClinic.Models.MedicalRecord", b =>
                 {
                     b.Navigation("LaboratoryRequest");
-
-                    b.Navigation("LaboratoryRequestsList");
 
                     b.Navigation("Payment");
 

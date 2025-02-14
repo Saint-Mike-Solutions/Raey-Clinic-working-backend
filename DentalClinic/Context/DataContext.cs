@@ -214,10 +214,7 @@ namespace DentalClinic.Context
                 .HasForeignKey<Bacterology>(b => b.AFBId) // AFBId in Bacterology is the foreign key
                 .OnDelete(DeleteBehavior.Cascade); // If a Bacterology is deleted, the associated AFB can also be deleted
 
-            modelBuilder.Entity<Patient>()
-                .HasOne(p => p.LaboratoryRequests)      // Patient has one LaboratoryRequest
-                .WithOne(lr => lr.Patient)              // LaboratoryRequest has one Patient
-                .HasForeignKey<LaboratoryRequests>(lr => lr.PatientId);  // Link by PatientId
+
 
             modelBuilder.Entity<LaboratoryRequests>()
                 .HasOne(l => l.RequestedBy)
@@ -231,18 +228,30 @@ namespace DentalClinic.Context
                 .HasForeignKey(l => l.ReportedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure one-to-one relationship between Patient and Payment
-            modelBuilder.Entity<Patient>()
-                .HasOne(p => p.Payment)       // Patient has one Payment
-                .WithOne(p => p.Patient)     // Payment has one Patient
-                .HasForeignKey<Payment>(p => p.PatientID); // FK in Payment table
+            modelBuilder.Entity<MedicalRecord>()
+                .HasOne(mr => mr.LaboratoryRequest)
+                .WithOne()
+                .HasForeignKey<LaboratoryRequests>(lr => lr.MedicalRecordId)
+                .OnDelete(DeleteBehavior.Restrict); // or Cascade if needed
+
+            modelBuilder.Entity<MedicalRecord>()
+                .HasOne(mr => mr.Payment)
+                .WithOne()
+                .HasForeignKey<Payment>(p => p.Id)
+                .OnDelete(DeleteBehavior.Restrict); // or Cascade if needed
+
+            modelBuilder.Entity<MedicalRecord>()
+                .HasOne(mr => mr.LaboratoryRequestsList)
+                .WithOne()
+                .HasForeignKey<LaboratoryRequestList>(lrl => lrl.MedicalRecoredId)
+                .OnDelete(DeleteBehavior.Restrict); // or Cascade if needed
 
 
-        //modelBuilder.Entity<LaboratoryRequestList>()
-        //    .HasOne(lr => lr.labratoryRequest)
-        //    .WithMany(l => l.LabrequestLists)
-        //    .HasForeignKey(lr => lr.laboratoryrequestId);
-    }
+            //modelBuilder.Entity<LaboratoryRequestList>()
+            //    .HasOne(lr => lr.labratoryRequest)
+            //    .WithMany(l => l.LabrequestLists)
+            //    .HasForeignKey(lr => lr.laboratoryrequestId);
+        }
 
 }
 }

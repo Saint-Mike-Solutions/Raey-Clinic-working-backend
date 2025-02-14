@@ -10,7 +10,7 @@ namespace DentalClinic.Models
 
         // Foreign key reference to Patient
         public int PatientId { get; set; }
-        [ForeignKey("PatientId")]
+        //[ForeignKey("PatientId")]
         [System.Text.Json.Serialization.JsonIgnore]
         public Patient? Patient { get; set; }
 
@@ -24,7 +24,7 @@ namespace DentalClinic.Models
 
         // Foreign key for the employee who treated the patient
         public int? TreatedById { get; set; }
-        [ForeignKey("TreatedById")]
+        //[ForeignKey("TreatedById")]
         [System.Text.Json.Serialization.JsonIgnore]
         public Employee? TreatedBy { get; set; }
 

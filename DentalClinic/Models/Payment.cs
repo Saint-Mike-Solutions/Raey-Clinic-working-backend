@@ -14,7 +14,7 @@ namespace DentalClinic.Models
         public Patient? Patient { get; set; }
         public int? Tax { get; set; } = 0;
         public decimal SubTotal { get; set; }
-        [ForeignKey("Employee")]
+        //[ForeignKey("Employee")]
         public int IssuedByID { get; set; }
         public Employee? Employee { get; set; }
         public decimal Total { get; set; }

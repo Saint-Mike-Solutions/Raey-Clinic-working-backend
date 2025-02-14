@@ -65,7 +65,7 @@ namespace DentalClinic.Controllers
         {
             try
             {
-                return Ok(await _recordService.GetMedicalRecordById(patientID));
+                return Ok(await _recordService.GetAllMedicalRecordsByPatientId(patientID));
             }
             //return Ok(await _employeeService.AddEmployee(employeeDTO));            }
             catch (KeyNotFoundException ex)
