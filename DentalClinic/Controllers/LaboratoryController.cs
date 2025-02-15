@@ -152,7 +152,7 @@ namespace DentalClinic.Controllers
                 // Use your logging framework here
                 Console.WriteLine(ex); // or a logger
 
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = "An unexpected error occurred. Please try again later." });
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse { Message = ex.Message });
             }
         }
 

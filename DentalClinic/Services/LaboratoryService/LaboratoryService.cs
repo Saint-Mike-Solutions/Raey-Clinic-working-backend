@@ -125,7 +125,7 @@ namespace DentalClinic.Services.LaboratoryService
                 Blood = DTO.Blood,
             };
 
-            var labreq = await _context.LaboratoryRequests.FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
+            var labreq = await _context.LaboratoryRequests  .FirstOrDefaultAsync(lr => lr.Id == DTO.LabReqListId);
             if (labreq == null)
             {
                 throw new Exception("Lab request not found");

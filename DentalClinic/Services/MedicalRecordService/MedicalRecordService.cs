@@ -178,6 +178,7 @@ namespace DentalClinic.Services.MedicalRecordService
                 Console.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw new Exception("hereeeeee"); // Re-throw the exception if you want it to propagate
             }
+            await _context.SaveChangesAsync();
 
 
 
